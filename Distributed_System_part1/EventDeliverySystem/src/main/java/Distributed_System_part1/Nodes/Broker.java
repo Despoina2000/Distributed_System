@@ -27,7 +27,8 @@ public class Broker implements Runnable {
 
     //Constructor tou broker
     public Broker() {
-        //TODO: edw kapws katalavenei an einai o prwtos,defteros i tritos broker kai analoga rithmizei port.
+        //TODO: edw kapws katalavenei an einai o prwtos,defteros i tritos broker kai analoga kanei initialize tin port.
+        //TODO: intitialize lists and hashmaps
         run();
     }
 
@@ -90,20 +91,21 @@ public class Broker implements Runnable {
         public void run() {
             //TODO
 
-            // while !socket.isClosed()
             //prwta o publisher stelnei to username tou
 
-            //o publisher stelnei se pio topic thelei na steilei message
-            //vlepoume an aftos o broker einai ipefthinos gia to topic me brokerPortsAndTopics.get(port).contains(topic)
-            //an einai aftos o katalilos broker tou stelnoume minima na sinexisei
-            //an oxi xrisimopoioume tin getResponsibleBrokerPort(topic) gia na vroume ton katalilo broker kai tou proothoume tin port
+            // while !socket.isClosed()
+                //o publisher stelnei se pio topic thelei na steilei message
+                //vlepoume an aftos o broker einai ipefthinos gia to topic me brokerPortsAndTopics.get(port).contains(topic)
+                //an einai aftos o katalilos broker tou stelnoume minima na sinexisei
+                //an oxi xrisimopoioume tin getResponsibleBrokerPort(topic) gia na vroume ton katalilo broker kai tou proothoume tin port
 
-            //an to topic den iparxei to dimiourgoume kai to vazoume mazi me ton user stin lista usernamesTopics
-            //to prosthetoume kai stin lista brokerPortAndTopics stin diki mas port
-            // kai kanoume notify tous brokers gia to kainourio topic(isws me parent.notifyBrokers(topic);)
+                //an to topic den iparxei to dimiourgoume kai to vazoume mazi me ton user stin lista usernamesTopics
+                //to prosthetoume kai stin lista brokerPortAndTopics stin diki mas port
+                // kai kanoume notify tous brokers gia to kainourio topic(isws me parent.notifyBrokers(topic);)
 
-            //o publisher stelnei to message tou kai to prosthetoume sto katalilo topic stin topicsMessages
-            //kaloume tin parent.topicsMessages.get(topic).notifyAll(); gia na staloun oles oi allages stous consumers
+                //o publisher stelnei to message tou kai to prosthetoume sto katalilo topic stin topicsMessages
+                //kaloume tin parent.topicsMessages.get(topic).notifyAll(); gia na staloun oles oi allages stous consumers
+            //end while
         }
     }
 
@@ -131,11 +133,13 @@ public class Broker implements Runnable {
             String currentTopic = "topic";//TODO: o consumer stelnei to topic pou thelei na diavasei kai to thetoume ws current topic
             sendMessages();
 
-            //kanoume .wait() sto parent.topicsMessages.get(currentTopic) kai opote kalesei kapoios notifyAll() sto topicsMessages.<currentTopic> sinexizoume
+            //kanoume .wait(2000) sto parent.topicsMessages.get(currentTopic)
+            // kai opote kalesei kapoios notifyAll() sto topicsMessages.<currentTopic> sinexizoume
+            // h otan perasoun 1000ms (gia na exei kai aftomato polling)
             while(!socket.isClosed()){ //oso iparxei sindesi
                 //TODO: while den stelnei kati o consumer, isws me inputstream.hasnext
                     try {
-                        parent.topicsMessages.get(currentTopic).wait();
+                        parent.topicsMessages.get(currentTopic).wait(1000);
                         sendMessages();
                     } catch (InterruptedException e) {
                         e.printStackTrace();
