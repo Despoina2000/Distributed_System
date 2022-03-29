@@ -53,13 +53,7 @@ public class Broker implements Runnable {
         //to prwto minima einai "publisher","consumer" h "broker"
     }
 
-    //Epistrefei MD5(or SHA-1) hash apo string (px gia na vgaloume to hash tou broker "ip:port" h to hash tou "topic") (mporoume na tin valoume se helper class px utils.java)
-    private BigInteger hash(String s) {
-        //TODO
-        return null;
-    }
-
-    //xrisimopoiei thn hash gia na vrei se poion broker anoikei to topic kai epistrefei tin port aftou tou broker
+    //xrisimopoiei thn hash apo to Util.java gia na vrei se poion broker anoikei to topic kai epistrefei tin port aftou tou broker
     private int getResponsibleBrokerPort(String topic) {
         //TODO
         return 0;
