@@ -14,6 +14,7 @@ public class Broker implements Runnable {
     private ServerSocket serverSocket;
     private int port;
 
+    //volatile = koino gia ola ta threads
     //edw kratame poios broker(to port tou) einai ipefthinos gia poia topics, ginetai update opote mpainei kainourio topic
     //xrisimevei kai ws lista olwn twn topic pou iparxoun gia na stelnoume ston consumer
     public volatile HashMap<Integer,ArrayList<String>> brokerPortsAndTopics;
@@ -81,12 +82,15 @@ public class Broker implements Runnable {
         public BrokerPublisherConnection(Socket socket, Broker parent){
             this.socket = socket;
             this.parent = parent;
+            //edw mporoume na kanoume initialize kai ta input output streams
         }
 
         //handles tin epikoinwnia me ton Publisher
         @Override
         public void run() {
             //TODO
+
+            // while !socket.isClosed()
             //prwta o publisher stelnei to username tou
 
             //o publisher stelnei se pio topic thelei na steilei message
@@ -114,6 +118,7 @@ public class Broker implements Runnable {
         public BrokerConsumerConnection(Socket socket, Broker parent){
             this.socket = socket;
             this.parent = parent;
+            //edw mporoume na kanoume initialize kai ta input output streams
         }
 
         //handles tin epikoinwnia me ton Consumer
