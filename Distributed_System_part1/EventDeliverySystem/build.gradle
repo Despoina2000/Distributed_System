@@ -33,3 +33,39 @@ tasks.named('test') {
     // Use JUnit Platform for unit tests.
     useJUnitPlatform()
 }
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'Distributed_System_part1.EventDeliverySystem'
+    }
+}
+
+task runBroker(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'Distributed_System_part1.EventDeliverySystem'
+    args 'broker'
+}
+
+task runUserNode(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'Distributed_System_part1.EventDeliverySystem'
+    args 'usernode'
+}
+
+task runbro(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'Distributed_System_part1.EventDeliverySystem'
+    args 'broker'
+}
+
+task runuser(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'Distributed_System_part1.EventDeliverySystem'
+    args 'usernode'
+}
+
+task runuse(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'Distributed_System_part1.EventDeliverySystem'
+    args 'usernode'
+}
