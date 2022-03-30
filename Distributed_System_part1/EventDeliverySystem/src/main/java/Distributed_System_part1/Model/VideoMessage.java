@@ -2,18 +2,33 @@ package Distributed_System_part1.Model;
 
 import Distributed_System_part1.Util.VideoMetadata;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class VideoMessage extends Message{
     private String contentType = "video";
     private VideoMetadata videoMetadata;
-    private ArrayList<byte[]> content;
+    private File content;
+    private ArrayList<byte[]> chunkedContent;
 
 
-    public VideoMessage(String username, String topic, VideoMetadata videoMetadata, ArrayList<byte[]> content) {
+    public VideoMessage(String username, String topic, VideoMetadata videoMetadata) {
+        super(username, topic);
+        this.videoMetadata = videoMetadata;
+    }
+
+    //overloaded constructor mazi me to content
+    public VideoMessage(String username, String topic, VideoMetadata videoMetadata, File content) {
         super(username, topic);
         this.videoMetadata = videoMetadata;
         this.content = content;
+    }
+
+    //overloaded constructor mazi me to content se chunks (tha apothikevete ston broker etsi)
+    public VideoMessage(String username, String topic, VideoMetadata videoMetadata, ArrayList<byte[]> chunkedContent) {
+        super(username, topic);
+        this.videoMetadata = videoMetadata;
+        this.chunkedContent = chunkedContent;
     }
 
     public String getContentType() {
@@ -24,7 +39,11 @@ public class VideoMessage extends Message{
         return videoMetadata;
     }
 
-    public ArrayList<byte[]> getContent() {
+    public File getContent() {
         return content;
+    }
+
+    public ArrayList<byte[]> getChunkedContent() {
+        return chunkedContent;
     }
 }
