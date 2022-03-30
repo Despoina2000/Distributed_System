@@ -2,7 +2,6 @@ package Distributed_System_part1.Nodes;
 
 import Distributed_System_part1.Model.Message;
 
-import java.math.BigInteger;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -10,9 +9,10 @@ import java.util.HashMap;
 
 public class Broker implements Runnable {
 
-    private final String url = "localhost";
+    public final String url = "localhost";
     private ServerSocket serverSocket;
-    private int port;
+    public ArrayList<Socket> otherBrokers;
+    public int port;
 
     //volatile = koino gia ola ta threads
     //edw kratame poios broker(to port tou) einai ipefthinos gia poia topics, ginetai update opote mpainei kainourio topic
@@ -77,6 +77,7 @@ public class Broker implements Runnable {
         public BrokerPublisherConnection(Socket socket, Broker parent){
             this.socket = socket;
             this.parent = parent;
+            //TODO:
             //edw mporoume na kanoume initialize kai ta input output streams
         }
 
@@ -99,6 +100,7 @@ public class Broker implements Runnable {
                 // kai kanoume notify tous brokers gia to kainourio topic(isws me parent.notifyBrokers(topic);)
 
                 //o publisher stelnei to message tou kai to prosthetoume sto katalilo topic stin topicsMessages
+                //TODO: xeirismos katallilos an einai ImageMessage i VideoMessage (pairnoume prwta to message xwris to content kai meta ta chunks ena ena)
                 //kaloume tin parent.topicsMessages.get(topic).notifyAll(); gia na staloun oles oi allages stous consumers
             //end while
         }
@@ -124,7 +126,7 @@ public class Broker implements Runnable {
             //TODO
             //stelnoume "username?" gia na dwsei o consumer to username tou
             //o consumer stelnei to username tou
-            //tou stelnoume tin lista brokerPortsAndTopics (opote kserei ola ta topics kai pou na apefthinthei gia kathe topic)
+            sendBrokerTopics(); //tou stelnoume tin lista brokerPortsAndTopics (opote kserei ola ta topics kai pou na apefthinthei gia kathe topic)
 
             String currentTopic = "topic";//TODO: o consumer stelnei to topic pou thelei na diavasei kai to thetoume ws current topic
             sendMessages();
@@ -140,8 +142,11 @@ public class Broker implements Runnable {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                //TODO: telos while, opote exei steilei kainourio topic o consumer
+                //TODO: telos while, opote exei steilei kainourio topic o consumer h zitaei sendBrokerTopics();
+                //TODO: if kainourio topic:
                 currentTopic = "newTopic"; //TODO: diavazoume kai thetoume to kainourio topic kai sinexizei to loop
+                //TODO: if zitaei topics:
+                sendBrokerTopics(); //TODO: stelnoume sendBrokerTopics(); kai sinexizei to loop
             }
         }
 
@@ -153,9 +158,14 @@ public class Broker implements Runnable {
             if (topicsMessages.get(currentTopic).size()>topicMessageIndex.get(currentTopic)) { // an iparxoun perisotera minimata apo osa exei idi diavasei o consumer
                 for (int i = topicMessageIndex.get(currentTopic) + 1 ; i < topicsMessages.get(currentTopic).size(); i++) { // gia kathe kainourio minima
                     // TODO: send topicMessageIndex.get(currentTopic)[i]
+                    // TODO: if message is ImageMessage or VideoMessage send without content and then send chunkedContent one by one chunk
                     topicMessageIndex.put(currentTopic,i);//update the current index for this consumer
                 }
             }
+        }
+
+        private void sendBrokerTopics() {
+            //TODO: send lista brokerPortsAndTopics
         }
     }
 
