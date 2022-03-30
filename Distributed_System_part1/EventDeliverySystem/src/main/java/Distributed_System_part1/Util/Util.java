@@ -23,6 +23,8 @@ public class Util {
         return null;
     }
 
+    //sta epomena mporoume na xrisimopoiisoume to metadata-extractor
+
     //vgazei ta metadata tou image pou tha stalnoun mazi me to ImageMessage
     public ImageMetadata extractImageMetadata(File imageFile) {
         //TODO
