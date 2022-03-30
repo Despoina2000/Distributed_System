@@ -28,8 +28,7 @@ public class Broker implements Runnable {
     //Constructor tou broker
     public Broker() {
         //TODO: edw kapws katalavenei an einai o prwtos,defteros i tritos broker kai analoga kanei initialize tin port.
-        //TODO: intitialize lists and hashmaps
-        run();
+        //TODO: initialize lists and hashmaps
     }
 
     //Edw arxizei na trexei o broker se diko tou thread. Mesa tha dimiourgei kainouria thread gia kathe connection.
@@ -38,7 +37,7 @@ public class Broker implements Runnable {
         //TODO
         //an einai o defteros broker kanei connect me ton prwto
         //an einai o tritos broker kanei connect me tous allous 2
-        //etsi exoume connection metaksi olwn twn broker gia na kanoume update to brokerPortAndTopics
+        //etsi exoume connection metaksi olwn twn broker gia na kanoume update to brokerPortsAndTopics
         while(true) {
             acceptConnection();
         }
@@ -77,7 +76,7 @@ public class Broker implements Runnable {
         public BrokerPublisherConnection(Socket socket, Broker parent){
             this.socket = socket;
             this.parent = parent;
-            //TODO:
+            //TODO
             //edw mporoume na kanoume initialize kai ta input output streams
         }
 

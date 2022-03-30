@@ -16,7 +16,7 @@ public class UserNode {
 
 
     public UserNode() {
-        //TODO:
+        //TODO
         //read and set username
         //currentBrokerPort = random broker port
         // publisher = new Publisher(this) (mporei aplws na trexei sto main thread o publisher kai se allo o consumer anti na exoume 2 threads)
@@ -36,7 +36,7 @@ public class UserNode {
 
     //arxizei to command line interface gia na dwsoume entoles (/topic, message klp)
     private void startCLI() {
-        //TODO:
+        //TODO
         /*
         pithanes entoles:
         /topic <topic> (currentTopic = <topic>; publisher.setTopic(); consumerThread.setTopic();)
@@ -59,7 +59,7 @@ public class UserNode {
         }
 
         public void connectToBroker(int port) {
-            //TODO:
+            //TODO
             //connect to broker at port
             //send "publisher"
             //read "username?"
@@ -67,7 +67,8 @@ public class UserNode {
         }
 
         public boolean setTopic() {
-            //TODO:
+            //TODO
+            //TODO: check an exoume idi tin pliroforia port-topic
             //send to broker parent.currentTopic
             //perimenoume apantisi apo broker,
             // an i apantisi einai broker port thetoume parent.currentBrokerPort = port
@@ -77,11 +78,11 @@ public class UserNode {
         }
 
         public void sendMessage(Message message){
-            //TODO:
+            //TODO
         }
 
         public void sendFileChunks(ArrayList<byte[]> fileChunks){
-            //TODO:
+            //TODO
         }
     }
 
@@ -95,13 +96,13 @@ public class UserNode {
 
         @Override
         public void run() {
-            //TODO:
+            //TODO
             //connectToBroker(currentBrokerPort)
             //while running processIncomingMessage
         }
 
         public void connectToBroker(int port) {
-            //TODO:
+            //TODO
             //close socket an iparxei sindesi me proigoumeno broker
             //connect to broker at port
             //send "consumer"
@@ -111,13 +112,13 @@ public class UserNode {
         }
 
         public void setTopic() {
-            //TODO:
+            //TODO
             //send to broker parent.currentTopic
             //edw mporoume na kanoume print olo to istoriko gia to currentTopic apo to topicsMessages kai tha perimenoume gia kainouria minimata
         }
 
         private void processIncomingMessage(Message message) {
-            //TODO:
+            //TODO
             //if message.getContentType=="text"/"image"/"video/ do this..
             // an to mesage einai imagemessage i videomessage arxizoume na diavazoume byte[] se mia arraylist
             // kai to sinthetoume meta me mergeChunksToFile se new ImageMessage/VideoMessage me ton overloaded constructor pou periexei kai tto content
@@ -126,7 +127,7 @@ public class UserNode {
         }
 
         public void requestTopics() {
-            //TODO:
+            //TODO
             //zitaei tin lista me ta topic apo ton broker
             //receive lista brokerPortsAndTopics
         }
