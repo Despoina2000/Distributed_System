@@ -85,7 +85,8 @@ public class Broker implements Runnable {
         public void run() {
             //TODO
 
-            //prwta o publisher stelnei to username tou
+            //stelnoume "username?" gia na dwsei o publisher to username tou
+            //o publisher stelnei to username tou
 
             // while !socket.isClosed()
                 //o publisher stelnei se pio topic thelei na steilei message
@@ -121,13 +122,14 @@ public class Broker implements Runnable {
         @Override
         public void run() {
             //TODO
-            //prwta o consumer stelnei to username tou
+            //stelnoume "username?" gia na dwsei o consumer to username tou
+            //o consumer stelnei to username tou
             //tou stelnoume tin lista brokerPortsAndTopics (opote kserei ola ta topics kai pou na apefthinthei gia kathe topic)
 
             String currentTopic = "topic";//TODO: o consumer stelnei to topic pou thelei na diavasei kai to thetoume ws current topic
             sendMessages();
 
-            //kanoume .wait(2000) sto parent.topicsMessages.get(currentTopic)
+            //kanoume .wait(1000) sto parent.topicsMessages.get(currentTopic)
             // kai opote kalesei kapoios notifyAll() sto topicsMessages.<currentTopic> sinexizoume
             // h otan perasoun 1000ms (gia na exei kai aftomato polling)
             while(!socket.isClosed()){ //oso iparxei sindesi
