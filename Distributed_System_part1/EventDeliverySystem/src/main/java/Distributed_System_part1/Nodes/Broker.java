@@ -95,7 +95,8 @@ public class Broker implements Runnable {
 
     /**
      * h acceptConnection dimiourgei kainourio thread gia kathe Publisher connected,
-     *     ston constructor pairname (socket,this) to this einai o broker
+     *     ston constructor pairname (socket,this) to this einai o parent broker
+     *     gia na kalesoume px parent.notifyBrokers(topic)
      */
     private class BrokerPublisherConnection implements Runnable {
         private Socket socket;
@@ -139,7 +140,7 @@ public class Broker implements Runnable {
     }
     /**
      * h acceptConnection dimiourgei kainourio thread gia kathe Consumer connected,
-     *     ston constructor pairname (socket,this) to this einai o broker
+     *     ston constructor pairname (socket,this) to this einai o parent broker
      */
     private class BrokerConsumerConnection implements Runnable {
         private Socket socket;
