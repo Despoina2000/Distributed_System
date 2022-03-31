@@ -34,18 +34,20 @@ public class UserNode {
         startCLI();
     }
 
-    //arxizei to command line interface gia na dwsoume entoles (/topic, message klp)
+    /**
+     * arxizei to command line interface gia na dwsoume entoles (px /topic, message klp)
+     */
     private void startCLI() {
         //TODO
         /*
-        pithanes entoles:
-        /topic <topic> (currentTopic = <topic>; publisher.setTopic(); consumerThread.setTopic();)
-        /topics (consumer.requestTopics)
-        <sketo message> (sendMessage(new TextMessage...))
-        /image <imagepath> (sendMessage(new ImageMessage xwris to content)) meta arxizoume kai stelnoume ta byte[]
-                        apo tin ArrayList<byte[]> splitFileToChunks isws me tin sendFileChunks(splitFileToChunks)
-        /video <videopath> (sendMessage(new VideoMessage xwris to content)) meta arxizoume kai stelnoume ta byte[]
-                        apo tin ArrayList<byte[]> splitFileToChunks isws me tin sendFileChunks(splitFileToChunks)
+         * pithanes entoles:
+         * /topic <topic> (currentTopic = <topic>; publisher.setTopic(); consumerThread.setTopic();)
+         * /topics (consumer.requestTopics)
+         * <sketo message> (sendMessage(new TextMessage...))
+         * /image <imagepath> (sendMessage(new ImageMessage xwris to content)) meta arxizoume kai stelnoume ta byte[]
+         *                 apo tin ArrayList<byte[]> splitFileToChunks isws me tin sendFileChunks(splitFileToChunks)
+         * /video <videopath> (sendMessage(new VideoMessage xwris to content)) meta arxizoume kai stelnoume ta byte[]
+         *                apo tin ArrayList<byte[]> splitFileToChunks isws me tin sendFileChunks(splitFileToChunks)
          */
     }
 

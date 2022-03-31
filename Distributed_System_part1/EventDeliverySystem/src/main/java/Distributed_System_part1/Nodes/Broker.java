@@ -1,6 +1,7 @@
 package Distributed_System_part1.Nodes;
 
 import Distributed_System_part1.Model.Message;
+import Distributed_System_part1.Util.Util;
 
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -14,24 +15,39 @@ public class Broker implements Runnable {
     public ArrayList<Socket> otherBrokers;
     public int port;
 
-    //volatile = koino gia ola ta threads
-    //edw kratame poios broker(to port tou) einai ipefthinos gia poia topics, ginetai update opote mpainei kainourio topic
-    //xrisimevei kai ws lista olwn twn topic pou iparxoun gia na stelnoume ston consumer
+
+
+    /**
+     * volatile = koino gia ola ta threads
+     * edw kratame poios broker(to port tou) einai ipefthinos gia poia topics, ginetai update opote mpainei kainourio topic
+     * xrisimevei kai ws lista olwn twn topic pou iparxoun gia na stelnoume ston consumer
+     */
     public volatile HashMap<Integer,ArrayList<String>> brokerPortsAndTopics;
 
-    //poia username akolouthoun poia topic
+    /**
+     * poia username akolouthoun poia topic
+     */
     public volatile HashMap<String,ArrayList<String>> usernamesTopics;
 
-    //edw kratame gia kathe topic tou broker tin lista me ta messages (den evala queue gia na min adeiazei na mporoume na ta ksanasteiloume)
+    /**
+     * edw kratame gia kathe topic tou broker tin lista me ta messages
+     * (den evala queue gia na min adeiazei na mporoume na ta ksanasteiloume)
+     */
     public volatile HashMap<String,ArrayList<Message>> topicsMessages;
 
-    //Constructor tou broker
+    /**
+     * Constructor tou broker
+     * katalavenei an einai o prwtos,defteros i tritos broker kai analoga kanei initialize tin port.
+     */
     public Broker() {
         //TODO: edw kapws katalavenei an einai o prwtos,defteros i tritos broker kai analoga kanei initialize tin port.
         //TODO: initialize lists and hashmaps
     }
 
-    //Edw arxizei na trexei o broker se diko tou thread. Mesa tha dimiourgei kainouria thread gia kathe connection.
+    /**
+     * Edw arxizei na trexei o broker se diko tou thread.
+     * Mesa tha dimiourgei kainouria thread gia kathe connection.
+     */
     @Override
     public void run() {
         //TODO
@@ -43,31 +59,44 @@ public class Broker implements Runnable {
         }
     }
 
-    //An to connection einai apo Publisher dimiourgei kainourio thread BrokerPublisherConnection,
-    //an einai Consumer kainourio thread BrokerConsumerConnection
-    //an einai Broker kainourio thread BrokerBrokerConnection(afto isws na min xreiazete, mporoume na kratame lista me ta sockets twn allwn broker sto main thread)
-    //kai stis 3 periptwseis pernaei to socket kai 'this'(parent broker) sto thread
+    /**
+     * An to connection einai apo Publisher dimiourgei kainourio thread BrokerPublisherConnection,
+     *     an einai Consumer kainourio thread BrokerConsumerConnection
+     *     an einai Broker kainourio thread BrokerBrokerConnection(afto isws na min xreiazete, mporoume na kratame lista me ta sockets twn allwn broker sto main thread)
+     *     kai stis 3 periptwseis pernaei to socket kai 'this'(parent broker) sto thread
+     */
     private void acceptConnection(){
         //TODO
         //to prwto minima einai "publisher","consumer" h "broker"
     }
 
-    //xrisimopoiei thn hash apo to Util.java gia na vrei se poion broker anoikei to topic kai epistrefei tin port aftou tou broker
+    /**
+     * xrisimopoiei thn hash apo to Util.java gia na vrei se poion broker anoikei to topic
+     * kai epistrefei tin port aftou tou broker
+     * @param topic String topic
+     * @return port tou responsible gia to topic broker
+     * @see Util#hash(String topic)
+     */
     private int getResponsibleBrokerPort(String topic) {
         //TODO
         return 0;
     }
 
-    //stelnoume stous allous broker to kainourio topic kai aftoi to prosthetoun stin brokerPortAndTopics tous mazi me to port mas
+    /**
+     * stelnoume stous allous broker to kainourio topic
+     * kai aftoi to prosthetoun stin brokerPortAndTopics tous mazi me to port mas
+     * @param topic String topic
+     */
     private void notifyBrokers(String topic) {
-        //TODO
+        //TODO: send to other brokers port+topic
     }
 
 
-
-    // h acceptConnection dimiourgei kainourio thread gia kathe Publisher connected,
-    // ston constructor pairname (socket,this) to this einai o broker kai ton
-    // xrisimopoioume gia na vlepoume tis koines metavlites px parent.topics
+    /**
+     * h acceptConnection dimiourgei kainourio thread gia kathe Publisher connected,
+     *     ston constructor pairname (socket,this) to this einai o broker kai ton
+     *     xrisimopoioume gia na vlepoume tis koines metavlites px parent.topics
+     */
     private class BrokerPublisherConnection implements Runnable {
         private Socket socket;
         private Broker parent;
@@ -80,7 +109,9 @@ public class Broker implements Runnable {
             //edw mporoume na kanoume initialize kai ta input output streams
         }
 
-        //handles tin epikoinwnia me ton Publisher
+        /**
+         * handles tin epikoinwnia me ton Publisher
+         */
         @Override
         public void run() {
             //TODO
@@ -110,7 +141,9 @@ public class Broker implements Runnable {
         private Socket socket;
         private Broker parent;
         private String username;
-        private HashMap<String,Integer> topicMessageIndex; //mexri pio message exei lavei o consumer gia kathe topic
+        private HashMap<String,Integer> topicMessageIndex; //mexri pio message exei lavei o consumer gia kathe topic ,
+        // mporei na ginei global HashMap<String,<HashMap<String,Integer>> (username - topic - int) gia na kratame global istoriko poia messages exei diavase poios user
+
         private String currentTopic; // to topic to opoio diavazei twra o consumer
 
         public BrokerConsumerConnection(Socket socket, Broker parent){
@@ -119,7 +152,9 @@ public class Broker implements Runnable {
             //edw mporoume na kanoume initialize kai ta input output streams
         }
 
-        //handles tin epikoinwnia me ton Consumer
+        /**
+         * handles tin epikoinwnia me ton Consumer
+         */
         @Override
         public void run() {
             //TODO
@@ -154,7 +189,7 @@ public class Broker implements Runnable {
         private void sendMessages() {
             //stelnei ta kainouria messages gia to currentTopic ston consumer
             if (!topicMessageIndex.containsKey(currentTopic)) topicMessageIndex.put(currentTopic,-1);//an einai kainourio topic to vazoume stin topiki lista
-            if (topicsMessages.get(currentTopic).size()>topicMessageIndex.get(currentTopic)) { // an iparxoun perisotera minimata apo osa exei idi diavasei o consumer
+            if (topicsMessages.get(currentTopic).size() > topicMessageIndex.get(currentTopic)) { // an iparxoun perisotera minimata apo osa exei idi diavasei o consumer
                 for (int i = topicMessageIndex.get(currentTopic) + 1 ; i < topicsMessages.get(currentTopic).size(); i++) { // gia kathe kainourio minima
                     // TODO: send topicMessageIndex.get(currentTopic)[i]
                     // TODO: if message is ImageMessage or VideoMessage send without content and then send chunkedContent one by one chunk
