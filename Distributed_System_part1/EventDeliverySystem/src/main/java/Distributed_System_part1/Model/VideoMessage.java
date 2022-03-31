@@ -6,7 +6,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 public class VideoMessage extends Message{
-    private String contentType = "video";
+    private final String contentType = "video";
     private VideoMetadata videoMetadata;
     private File content;
     private ArrayList<byte[]> chunkedContent;
@@ -17,14 +17,26 @@ public class VideoMessage extends Message{
         this.videoMetadata = videoMetadata;
     }
 
-    //overloaded constructor mazi me to content
+    /**
+     * overloaded constructor mazi me to content file
+     * @param username
+     * @param topic
+     * @param videoMetadata
+     * @param content
+     */
     public VideoMessage(String username, String topic, VideoMetadata videoMetadata, File content) {
         super(username, topic);
         this.videoMetadata = videoMetadata;
         this.content = content;
     }
 
-    //overloaded constructor mazi me to content se chunks (tha apothikevete ston broker etsi)
+    /**
+     * overloaded constructor mazi me to content se chunks (tha apothikevete ston broker etsi)
+     * @param username
+     * @param topic
+     * @param videoMetadata
+     * @param chunkedContent
+     */
     public VideoMessage(String username, String topic, VideoMetadata videoMetadata, ArrayList<byte[]> chunkedContent) {
         super(username, topic);
         this.videoMetadata = videoMetadata;

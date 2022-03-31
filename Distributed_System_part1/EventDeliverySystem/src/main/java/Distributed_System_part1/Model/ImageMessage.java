@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class ImageMessage extends Message {
 
-    private String contentType = "image";
+    private final String contentType = "image";
     private ImageMetadata imageMetadata;
     private File content;
     private ArrayList<byte[]> chunkedContent;
@@ -17,14 +17,26 @@ public class ImageMessage extends Message {
         this.imageMetadata = imageMetadata;
     }
 
-    //overloaded constructor mazi me to content
+    /**
+     * overloaded constructor mazi me to content
+     * @param username
+     * @param topic
+     * @param imageMetadata
+     * @param content
+     */
     public ImageMessage(String username, String topic, ImageMetadata imageMetadata, File content) {
         super(username, topic);
         this.imageMetadata = imageMetadata;
         this.content = content;
     }
 
-    //overloaded constructor mazi me to content se chunks (tha apothikevete ston broker etsi)
+    /**
+     * overloaded constructor mazi me to content se chunks (tha apothikevete ston broker etsi)
+     * @param username
+     * @param topic
+     * @param imageMetadata
+     * @param chunkedContent
+     */
     public ImageMessage(String username, String topic, ImageMetadata imageMetadata, ArrayList<byte[]> chunkedContent) {
         super(username, topic);
         this.imageMetadata = imageMetadata;
