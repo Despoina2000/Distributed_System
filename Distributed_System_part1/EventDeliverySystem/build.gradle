@@ -22,6 +22,9 @@ dependencies {
 
     // This dependency is used by the application.
     implementation 'com.google.guava:guava:30.1.1-jre'
+
+    // metadata-extractor dependency
+    implementation group: 'com.drewnoakes', name: 'metadata-extractor', version: '2.17.0'
 }
 
 application {
