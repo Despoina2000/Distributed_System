@@ -16,4 +16,12 @@ public class TextMessage extends Message {
     public String getContentType() {
         return contentType;
     }
+
+    @Override
+    public String toString() {
+        return "TextMessage{" +
+                "username='" + username + '\'' +
+                ", content='" + content + '\'' +
+                '}';
+    }
 }
