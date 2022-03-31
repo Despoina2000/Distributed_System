@@ -15,6 +15,7 @@ public class UserNode {
     public volatile int currentBrokerPort;
     public volatile String currentTopic;
     public volatile HashMap<Integer,ArrayList<String>> brokerPortsAndTopics;
+    public volatile HashMap<String, ArrayList<Message>> topicsMessages; //edw mporoume na kratame osa minimata exoume diavasei idi
 
     /**
      * Main thread: publisher, other thread: consumer
@@ -93,7 +94,6 @@ public class UserNode {
 
     private class Consumer implements Runnable {
         private UserNode parent;
-        private HashMap<String, ArrayList<Message>> topicsMessages; //edw mporoume na kratame osa minimata exoume diavasei idi
 
         public Consumer(UserNode parent) {
             this.parent = parent;
@@ -113,7 +113,7 @@ public class UserNode {
             //send "consumer"
             //read "username?"
             //send username
-            //receive lista brokerPortsAndTopics
+            //receive lista brokerPortsAndTopics - update tin topikh brokerPortsAndTopics
         }
 
         public void setTopic() {
@@ -126,7 +126,7 @@ public class UserNode {
             //TODO
             //if message.getContentType=="text"/"image"/"video/ do this..
             // an to mesage einai imagemessage i videomessage arxizoume na diavazoume byte[] se mia arraylist
-            // kai to sinthetoume meta me mergeChunksToFile se new ImageMessage/VideoMessage me ton overloaded constructor pou periexei kai tto content
+            // kai to sinthetoume meta me mergeChunksToFile se new ImageMessage/VideoMessage me ton overloaded constructor pou periexei kai to content
 
             // prosthiki tou message sto topicsMessages (sto message.getTopic)
         }
