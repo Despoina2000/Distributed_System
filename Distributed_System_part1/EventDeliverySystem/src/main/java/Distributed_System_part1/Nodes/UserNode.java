@@ -6,21 +6,25 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class UserNode {
-    public String username;
     public final String url = "localhost";
-    volatile int currentBrokerPort;
-    volatile String currentTopic;
+
     private Publisher publisher;
     private Thread consumerThread;
 
+    public volatile String username;
+    public volatile int currentBrokerPort;
+    public volatile String currentTopic;
+    public volatile HashMap<Integer,ArrayList<String>> brokerPortsAndTopics;
 
-
+    /**
+     * Main thread: publisher, other thread: consumer
+     */
     public UserNode() {
         //TODO
         //read and set username
         //currentBrokerPort = random broker port
-        // publisher = new Publisher(this) (mporei aplws na trexei sto main thread o publisher kai se allo o consumer anti na exoume 2 threads)
-        // consumerThread = new thread consumer(this)
+        // publisher = new Publisher()
+        // consumerThread = new thread(new Consumer(this))
         // create new Folder with name username (to store images and videos)
 
         //destructor to delete folder and files, kaleitai otan kleinoume to app me CTRL+C
@@ -54,29 +58,28 @@ public class UserNode {
 
 
     private class Publisher{
-        private UserNode parent;
 
-        public Publisher(UserNode parent) {
-            this.parent = parent;
-        }
+        public Publisher() {}
 
         public void connectToBroker(int port) {
             //TODO
             //connect to broker at port
             //send "publisher"
             //read "username?"
-            //send parent.username
+            //send username
         }
 
-        public boolean setTopic() {
+        public void setTopic() {
             //TODO
-            //TODO: check an exoume idi tin pliroforia port-topic
-            //send to broker parent.currentTopic
+
+            //TODO: check an exoume idi tin pliroforia sto brokerPortsAndTopics allios:
+
+            //send to broker currentTopic
             //perimenoume apantisi apo broker,
-            // an i apantisi einai broker port thetoume parent.currentBrokerPort = port
+            // an i apantisi einai broker port thetoume currentBrokerPort = port
             // kai kanoume connectToBroker(port), consumer.connectToBroker(port) kai ksana setTopic kai consumer.setTopic
-            //perimenoume na mas pei o broker na sinexisoume, otan mas pei nai return true;
-            return true;
+
+            //perimenoume na mas pei o broker na sinexisoume
         }
 
         public void sendMessage(Message message){
@@ -109,13 +112,13 @@ public class UserNode {
             //connect to broker at port
             //send "consumer"
             //read "username?"
-            //send parent.username
+            //send username
             //receive lista brokerPortsAndTopics
         }
 
         public void setTopic() {
             //TODO
-            //send to broker parent.currentTopic
+            //send to broker currentTopic
             //edw mporoume na kanoume print olo to istoriko gia to currentTopic apo to topicsMessages kai tha perimenoume gia kainouria minimata
         }
 
@@ -132,6 +135,7 @@ public class UserNode {
             //TODO
             //zitaei tin lista me ta topic apo ton broker
             //receive lista brokerPortsAndTopics
+            //kanei update tin topikh brokerPortsAndTopics
         }
     }
 }
