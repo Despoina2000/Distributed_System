@@ -1,5 +1,8 @@
 package Distributed_System_part1.Util;
 
+/**
+ * pojo containing the video metadata
+ */
 public class VideoMetadata {
 
     private String fileName;

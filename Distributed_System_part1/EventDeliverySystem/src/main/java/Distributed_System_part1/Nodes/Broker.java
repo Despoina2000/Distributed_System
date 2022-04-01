@@ -8,6 +8,9 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * broker class, handles connections with publishers and consumers
+ */
 public class Broker implements Runnable {
 
     public final String url = "localhost";

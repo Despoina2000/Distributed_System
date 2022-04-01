@@ -1,5 +1,8 @@
 package Distributed_System_part1.Util;
 
+/**
+ * pojo containing the image metadata
+ */
 public class ImageMetadata {
 
     private String fileName;

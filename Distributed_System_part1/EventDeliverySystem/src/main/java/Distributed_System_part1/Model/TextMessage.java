@@ -1,5 +1,8 @@
 package Distributed_System_part1.Model;
 
+/**
+ * text message, extends Message
+ */
 public class TextMessage extends Message {
     private String content;
     private String contentType = "text";

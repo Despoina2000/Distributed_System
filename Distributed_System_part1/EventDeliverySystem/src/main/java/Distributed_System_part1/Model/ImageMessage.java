@@ -5,6 +5,9 @@ import Distributed_System_part1.Util.ImageMetadata;
 import java.io.File;
 import java.util.ArrayList;
 
+/**
+ * image message, extends Message
+ */
 public class ImageMessage extends Message {
 
     private final String contentType = "image";
