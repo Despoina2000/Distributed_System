@@ -5,6 +5,9 @@ import Distributed_System_part1.Model.Message;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * user node class, starts publisher and consumer
+ */
 public class UserNode {
     public final String url = "localhost";
 

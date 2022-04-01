@@ -1,5 +1,8 @@
 package Distributed_System_part1.Model;
 
+/**
+ * basic message class
+ */
 public class Message {
     protected String username;
     protected String topic;

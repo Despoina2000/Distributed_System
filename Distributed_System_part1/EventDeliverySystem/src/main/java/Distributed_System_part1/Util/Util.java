@@ -4,6 +4,9 @@ import java.io.File;
 import java.math.BigInteger;
 import java.util.ArrayList;
 
+/**
+ * contains helper methods to be used all around
+ */
 public class Util {
 
     /**

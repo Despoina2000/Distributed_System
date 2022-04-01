@@ -8,6 +8,9 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * broker class, handles connections with publishers and consumers
+ */
 public class Broker implements Runnable {
 
     public final String url = "localhost";
@@ -207,23 +210,6 @@ public class Broker implements Runnable {
 
         private void sendBrokerTopics() {
             //TODO: send lista brokerPortsAndTopics
-        }
-    }
-
-    // i acceptConnection dimiourgei kainourio thread gia tous allous 2 brokers, (socket,this) opws sta alla (mallon tha kratame aplws lista me sockets anti threads gia tous brokers)
-    private class BrokerBrokerConnection implements Runnable {
-        private Socket socket;
-        private Broker parent;
-
-        public BrokerBrokerConnection(Socket socket, Broker parent){
-            this.socket = socket;
-            this.parent = parent;
-        }
-
-        //handles tin epikoinwnia me ton allo Broker
-        @Override
-        public void run() {
-
         }
     }
 }
