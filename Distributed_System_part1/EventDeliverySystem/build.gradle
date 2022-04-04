@@ -72,3 +72,9 @@ task runuse(type: JavaExec) {
     mainClass = 'Distributed_System_part1.EventDeliverySystem'
     args 'usernode'
 }
+
+task runtest(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'Distributed_System_part1.EventDeliverySystem'
+    args 'test'
+}

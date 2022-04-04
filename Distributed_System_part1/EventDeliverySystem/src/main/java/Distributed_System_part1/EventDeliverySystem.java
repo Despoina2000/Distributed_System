@@ -3,9 +3,12 @@
  */
 package Distributed_System_part1;
 
+import Distributed_System_part1.Model.TextMessage;
 import Distributed_System_part1.Nodes.Broker;
 import Distributed_System_part1.Nodes.UserNode;
 
+import java.io.*;
+import java.net.Socket;
 import java.util.Locale;
 
 public class EventDeliverySystem {
@@ -14,7 +17,42 @@ public class EventDeliverySystem {
         if (args[0].toLowerCase(Locale.ROOT).startsWith("use")){
             UserNode userNode = new UserNode();
         } else if (args[0].toLowerCase(Locale.ROOT).startsWith("bro")) {
-            Broker broker = new Broker();
+            Thread brokerThread = new Thread(new Broker());
+            brokerThread.start();
+        } else if (args[0].toLowerCase(Locale.ROOT).startsWith("test")) {
+            try {
+                Socket socket = new Socket("localhost", 4000);
+                PrintWriter pw = new PrintWriter(socket.getOutputStream(), true);
+                System.out.println("sending \"publisher\"");
+                pw.println("publisher");
+                BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                String answer = br.readLine();
+                System.out.println(answer);
+                if (answer.equals("username?")){
+                    System.out.println("sending \"my_username\"");
+                    pw.println("my_username");
+                }
+                System.out.println("sending \"new_topic\"");
+                pw.println("new_topic");
+                answer = br.readLine();
+                if (answer.equals("continue")){
+                    System.out.println("sending message");
+                    pw.println("first message of new_topic");
+                    System.out.println("message sent");
+                }
+                pw.println("end");
+
+                System.out.println("sending \"second_topic\"");
+                pw.println("second_topic");
+                answer = br.readLine();
+                if (answer.equals("continue")) {
+                    System.out.println("sending message");
+                    pw.println("second topic first message");
+                    System.out.println("message sent");
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
