@@ -11,7 +11,6 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Hashtable;
 
 /**
  * broker class, handles connections with publishers and consumers
@@ -25,7 +24,7 @@ public class Broker implements Runnable {
     public final String url = "localhost";
     private ServerSocket serverSocket;
     public int port;
-    public ArrayList<Socket> otherBrokers;
+    public ArrayList<ObjectOutputStream> otherBrokersOutputStreams;
 
     /**
      * volatile = koino gia ola ta threads
@@ -99,7 +98,7 @@ public class Broker implements Runnable {
         System.out.println("Broker port set to: " + port);
 
         //initialize hashmaps/arraylists
-        otherBrokers = new ArrayList<>();
+        otherBrokersOutputStreams = new ArrayList<>();
         brokerPortsAndTopics = new HashMap<>();
         topicsMessages = new HashMap<>();
         usernamesTopicsIndex = new HashMap<>();
@@ -123,23 +122,27 @@ public class Broker implements Runnable {
             if (port == BROKER2) {
                 System.out.println("Connecting to Broker1.");
                 Socket broker1Socket = new Socket(url,BROKER1);
-                otherBrokers.add(broker1Socket);
-                PrintWriter broker1Writer = new PrintWriter(broker1Socket.getOutputStream(), true);
-                broker1Writer.println("broker");
+                ObjectOutputStream broker1Writer = new ObjectOutputStream(broker1Socket.getOutputStream());
+                otherBrokersOutputStreams.add(broker1Writer);
+                broker1Writer.writeObject("broker");
+                broker1Writer.flush();
+                new Thread(new BrokerBrokerConnection(broker1Socket, this)).start(); // kanourio BrokerBrokerConnection
             }
             //an einai o tritos broker kanei connect me tous allous 2 kai vazei ta socket stin otherBrokers
             if (port == BROKER3) {
                 System.out.println("Connecting to Broker1.");
                 Socket broker1Socket = new Socket(url,BROKER1);
-                otherBrokers.add(broker1Socket);
-                PrintWriter broker1Writer = new PrintWriter(broker1Socket.getOutputStream(), true);
-                broker1Writer.println("broker");
+                ObjectOutputStream broker1Writer = new ObjectOutputStream(broker1Socket.getOutputStream());
+                otherBrokersOutputStreams.add(broker1Writer);
+                broker1Writer.writeObject("broker");
+                broker1Writer.flush();
                 new Thread(new BrokerBrokerConnection(broker1Socket, this)).start(); // kanourio BrokerBrokerConnection
                 System.out.println("Connecting to Broker2.");
                 Socket broker2Socket = new Socket(url,BROKER2);
-                otherBrokers.add(broker2Socket);
-                PrintWriter broker2Writer = new PrintWriter(broker2Socket.getOutputStream(), true);
-                broker2Writer.println("broker");
+                ObjectOutputStream broker2Writer = new ObjectOutputStream(broker2Socket.getOutputStream());
+                otherBrokersOutputStreams.add(broker2Writer);
+                broker2Writer.writeObject("broker");
+                broker2Writer.flush();
                 new Thread(new BrokerBrokerConnection(broker2Socket, this)).start(); // kanourio BrokerBrokerConnection
             }
             System.out.println("Broker listening at port " + port);
@@ -163,21 +166,18 @@ public class Broker implements Runnable {
         //to prwto minima einai "publisher","consumer" h "broker"
         try {
             Socket newConnection = serverSocket.accept();
-            BufferedReader newConnectionInput = new BufferedReader(new InputStreamReader(newConnection.getInputStream()));
-            String firstLine = newConnectionInput.readLine();
+            ObjectInputStream newConnectionInput = new ObjectInputStream(newConnection.getInputStream());
+            String firstLine = (String) newConnectionInput.readObject();
             System.out.println("first line received: " + firstLine);
             switch (firstLine) {
                 case "broker" -> {  //an to prwto minima einai broker swzoume to socket stin lista otherBrokers
-                    System.out.println("Broker connected, saving socket to list otherBrokers.");
-                    otherBrokers.add(newConnection);
-                    if (otherBrokers.size() == 2) {
-                        for (Socket broker :otherBrokers) {
-                            new Thread(new BrokerBrokerConnection(broker, this)).start(); // kanourio BrokerBrokerConnection
-                        }
-                    }
+                    System.out.println("Broker connected, saving stream to list otherBrokersOutputStreams.");
+                    otherBrokersOutputStreams.add(new ObjectOutputStream(newConnection.getOutputStream()));
+                    for (ObjectOutputStream oos : otherBrokersOutputStreams) oos.flush();
+                    new Thread(new BrokerBrokerConnection(newConnection, this, newConnectionInput)).start(); // kanourio BrokerBrokerConnection
                 }
                 //an to prwto minima einai publisher ftiaxnoume kainourio BrokerPublisherConnection thread
-                case "publisher" -> new Thread(new BrokerPublisherConnection(newConnection, this)).start();
+                case "publisher" -> new Thread(new BrokerPublisherConnection(newConnection, this, newConnectionInput)).start();
                 //an to prwto minima einai consumer ftiaxnoume kainourio BrokerConsumerConnection thread
                 case "consumer" -> new Thread(new BrokerConsumerConnection(newConnection, this)).start();
                 default -> {
@@ -185,7 +185,7 @@ public class Broker implements Runnable {
                     newConnection.close();
                 }
             }
-        } catch (IOException e) {
+        } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
     }
@@ -200,7 +200,7 @@ public class Broker implements Runnable {
      */
     private int getResponsibleBrokerPort(String topic) {
         //TODO
-        return 4000;
+        return 5555;
     }
 
     /**
@@ -210,10 +210,9 @@ public class Broker implements Runnable {
      * @param topic String topic
      */
     private void notifyBrokers(String topic) {
-        for (Socket broker : otherBrokers) {
+        for (ObjectOutputStream brokerOutputStream : otherBrokersOutputStreams) {
             try {
-                PrintWriter pw = new PrintWriter(broker.getOutputStream(), true);
-                pw.println(port + topic); // notify other brokers about our port and the new topic
+                brokerOutputStream.writeObject(Integer.toString(port) + topic); // notify other brokers about our port and the new topic
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -230,15 +229,14 @@ public class Broker implements Runnable {
         private Socket socket;
         private Broker parent;
         private String username;
-        private PrintWriter brokerPublisherWriter;
-        private BufferedReader brokerPublisherReader;
-        private ObjectOutputStream brokerPublisherObjectOutputStream;
-        private ObjectInputStream brokerPublisherObjectInputStream;
+        private ObjectOutputStream brokerPublisherOutputStream;
+        private ObjectInputStream brokerPublisherInputStream;
 
-        public BrokerPublisherConnection(Socket socket, Broker parent) {
+        public BrokerPublisherConnection(Socket socket, Broker parent, ObjectInputStream brokerPublisherInputStream) {
             System.out.println("Started new BrokerPublisherConnectionThread");
             this.socket = socket;
             this.parent = parent;
+            this.brokerPublisherInputStream = brokerPublisherInputStream;
             //TODO
         }
 
@@ -251,12 +249,12 @@ public class Broker implements Runnable {
                 //TODO
 
                 //stelnoume "username?" gia na dwsei o publisher to username tou
-                brokerPublisherWriter = new PrintWriter(socket.getOutputStream(), true);
-                brokerPublisherWriter.println("username?");
+                brokerPublisherOutputStream = new ObjectOutputStream(socket.getOutputStream());
+                brokerPublisherOutputStream.writeObject("username?");
 
                 //o publisher stelnei to username tou
-                brokerPublisherReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                this.username = brokerPublisherReader.readLine();
+                this.username = (String) brokerPublisherInputStream.readObject();
+                System.out.println("publisher username: " + username);
                 //an einai prwti fora pou vlepoume to username kanoume initialize tin usernamesTopicsIndex
                 if (!usernamesTopicsIndex.containsKey(username)) usernamesTopicsIndex.put(username, new HashMap<String, Integer>());
 
@@ -265,10 +263,10 @@ public class Broker implements Runnable {
 
                         //o publisher stelnei se pio topic thelei na steilei message
                         String topic;
-                        if ((topic = brokerPublisherReader.readLine()) != null) {
+                        if ((topic = (String) brokerPublisherInputStream.readObject()) != null) {
                             System.out.println("Publisher:" + username + " set topic:" + topic);
                             if (brokerPortsAndTopics.get(port).contains(topic)) { //an aftos o broker exei hdh afto to topic, (an iparxei idi stin brokerPortsAndTopics)
-                                brokerPublisherWriter.println("continue");// leme ston publisher oti mporei na sinexisei
+                                brokerPublisherOutputStream.writeObject("continue");// leme ston publisher oti mporei na sinexisei
 
                             } else if ( getResponsibleBrokerPort(topic) == port){ //an aftos o broker einai ipefthinos gia to kainourio topic (an i getResponsibleBrokerPort vgazei tin diki mas port diladi)
                                 //dimiourgoume to topic kai to vazoume mazi me ton user stin lista usernamesTopicsIndex me index -1
@@ -276,13 +274,13 @@ public class Broker implements Runnable {
                                 usernamesTopicsIndex.get(username).put(topic, -1);
                                 brokerPortsAndTopics.get(port).add(topic);//to prosthetoume kai stin lista brokerPortAndTopics stin diki mas port
                                 parent.notifyBrokers(topic);// kai kanoume notify tous brokers gia to kainourio topic
-                                brokerPublisherWriter.println("continue");// leme ston publisher oti mporei na sinexisei
+                                brokerPublisherOutputStream.writeObject("continue");// leme ston publisher oti mporei na sinexisei
                             } else { //an oxi xrisimopoioume tin getResponsibleBrokerPort(topic) gia na vroume ton katalilo broker kai tou proothoume tin port
-                                brokerPublisherWriter.println(getResponsibleBrokerPort(topic));
+                                brokerPublisherOutputStream.writeObject(Integer.toString(getResponsibleBrokerPort(topic)));
                             }
 
                             String incomingMessage;
-                            while (!(incomingMessage = brokerPublisherReader.readLine()).equalsIgnoreCase("end")) {
+                            while (!(incomingMessage = (String) brokerPublisherInputStream.readObject()).equalsIgnoreCase("end")) {//TODO: change to Message object
                                 System.out.println("reading message");
                                 topicsMessages.get(topic).add(new TextMessage(username,topic,incomingMessage)); //o publisher stelnei to message tou kai to prosthetoume sto katalilo topic stin topicsMessages
                                 synchronized (topicsMessages.get(topic)) {
@@ -300,7 +298,7 @@ public class Broker implements Runnable {
                         System.out.println("Publisher with username:" + username + " disconnected.");
                     }
                 }//end while
-            } catch (IOException e) {
+            } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
         }
@@ -387,17 +385,17 @@ public class Broker implements Runnable {
     private class BrokerBrokerConnection implements Runnable {
         private Socket socket;
         private Broker parent;
-        private BufferedReader brokerBrokerReader;
+        private ObjectInputStream brokerBrokerInputStream;
 
         public BrokerBrokerConnection(Socket socket, Broker parent) {
             this.socket = socket;
             this.parent = parent;
-            try {
-                // initialize bufferedreader for socket
-                brokerBrokerReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        }
+
+        public BrokerBrokerConnection(Socket socket, Broker parent, ObjectInputStream brokerBrokerInputStream) {
+            this.socket = socket;
+            this.parent = parent;
+            this.brokerBrokerInputStream = brokerBrokerInputStream;
         }
 
         /**
@@ -405,11 +403,16 @@ public class Broker implements Runnable {
          */
         @Override
         public void run() {
+            try {
+                if (brokerBrokerInputStream == null) brokerBrokerInputStream = new ObjectInputStream(socket.getInputStream());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             System.out.println("Started new brokerBrokerConnectionThread");
             while (!socket.isClosed()) { // oso einai anoixto to socket
                 try {
                     String incomingPortAndTopic;
-                    if ((incomingPortAndTopic = brokerBrokerReader.readLine()) != null) {
+                    if ((incomingPortAndTopic = (String) brokerBrokerInputStream.readObject()) != null) {
                         String incomingPort = incomingPortAndTopic.substring(0, 4);
                         String incomingTopic = incomingPortAndTopic.substring(4);
                         //add port and topic to brokerPortsAndTopics
@@ -419,12 +422,14 @@ public class Broker implements Runnable {
                     }
                 } catch (IOException e) {
                     try {
-                        otherBrokers.remove(socket);
+                        otherBrokersOutputStreams.remove(socket);
                         socket.close();
                         System.out.println("A broker disconnected.");
                     } catch (IOException ex) {
                         ex.printStackTrace();
                     }
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
                 }
             }
         }

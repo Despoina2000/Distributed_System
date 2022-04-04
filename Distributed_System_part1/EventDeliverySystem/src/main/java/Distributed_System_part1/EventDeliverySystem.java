@@ -21,36 +21,37 @@ public class EventDeliverySystem {
             brokerThread.start();
         } else if (args[0].toLowerCase(Locale.ROOT).startsWith("test")) {
             try {
-                Socket socket = new Socket("localhost", 4000);
-                PrintWriter pw = new PrintWriter(socket.getOutputStream(), true);
+                Socket socket = new Socket("localhost", 5555);
+
+                ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
                 System.out.println("sending \"publisher\"");
-                pw.println("publisher");
-                BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                String answer = br.readLine();
+                oos.writeObject("publisher");
+                ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
+                String answer = (String) ois.readObject();
                 System.out.println(answer);
                 if (answer.equals("username?")){
                     System.out.println("sending \"my_username\"");
-                    pw.println("my_username");
+                    oos.writeObject("my_username");
                 }
                 System.out.println("sending \"new_topic\"");
-                pw.println("new_topic");
-                answer = br.readLine();
+                oos.writeObject("new_topic");
+                answer = (String) ois.readObject();
                 if (answer.equals("continue")){
                     System.out.println("sending message");
-                    pw.println("first message of new_topic");
+                    oos.writeObject("first message of new_topic");
                     System.out.println("message sent");
                 }
-                pw.println("end");
+                oos.writeObject("end");
 
                 System.out.println("sending \"second_topic\"");
-                pw.println("second_topic");
-                answer = br.readLine();
+                oos.writeObject("second_topic");
+                answer = (String) ois.readObject();
                 if (answer.equals("continue")) {
                     System.out.println("sending message");
-                    pw.println("second topic first message");
+                    oos.writeObject("second topic first message");
                     System.out.println("message sent");
                 }
-            } catch (IOException e) {
+            } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
         }
