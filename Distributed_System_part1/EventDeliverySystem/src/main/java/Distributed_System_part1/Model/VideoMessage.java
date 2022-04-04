@@ -8,7 +8,7 @@ import java.util.ArrayList;
 /**
  * video message, extends Message
  */
-public class VideoMessage extends Message{
+public class VideoMessage extends Message {
     private final String contentType = "video";
     private VideoMetadata videoMetadata;
     private File content;
