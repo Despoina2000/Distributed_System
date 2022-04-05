@@ -5,7 +5,6 @@ import Distributed_System_part1.Model.Message;
 import Distributed_System_part1.Model.TextMessage;
 import Distributed_System_part1.Model.VideoMessage;
 import Distributed_System_part1.Util.Util;
-import org.checkerframework.checker.units.qual.A;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -129,7 +128,7 @@ public class Broker implements Runnable {
                 broker1Writer.flush();
                 new Thread(new BrokerBrokerConnection(broker1Socket, this)).start(); // kanourio BrokerBrokerConnection
             }
-            //an einai o tritos broker kanei connect me tous allous 2 kai vazei ta socket stin otherBrokers
+            //an einai o tritos broker kanei connect me tous allous 2 kai vazei ta outputstreams stin otherBrokersOutputStream
             if (port == BROKER3) {
                 System.out.println("Connecting to Broker1.");
                 Socket broker1Socket = new Socket(url, BROKER1);
@@ -396,7 +395,7 @@ public class Broker implements Runnable {
                             if (currentTopic != null) { //an exei thesei currentTopic o consumer
                                 while (!socket.isClosed() && socket.getInputStream().available() == 0) {
                                     i++;
-                                    if (i == 5) {
+                                    if (i == 5) { // check every 5 seconds if consumer is still connected
                                         brokerConsumerOutputStream.writeObject("there?");
                                         if (!brokerConsumerInputStream.readObject().equals("yes")) {
                                             throw new SocketException();
@@ -509,7 +508,9 @@ public class Broker implements Runnable {
                     }
                 } catch (IOException e) {
                     try {
-                        otherBrokersOutputStreams.remove(socket);
+                        for (ObjectOutputStream brokerOutputStream : otherBrokersOutputStreams) {
+                            if (brokerOutputStream == socket.getOutputStream()) otherBrokersOutputStreams.remove(brokerOutputStream);
+                        }
                         socket.close();
                         System.out.println("A broker disconnected.");
                     } catch (IOException ex) {
