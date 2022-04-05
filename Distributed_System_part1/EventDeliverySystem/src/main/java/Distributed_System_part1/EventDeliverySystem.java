@@ -40,13 +40,14 @@ public class EventDeliverySystem {
                 oos.writeObject("new_topic");
                 answer = (String) ois.readObject();
                 if (answer.equals("continue")){
+                    System.out.println("sending message");
+                    oos.writeObject(new TextMessage("my_username","new_topic","first message of new_topic"));
+                    System.out.println("message sent");
                     System.out.println("sending fake image message");
                     oos.writeObject(new ImageMessage("my_username","new_topic", new ImageMetadata("fakeFile",400,400,400)));
                     //start sending image chunks
                     oos.writeObject("testbytes".getBytes());
-                    System.out.println("sending message");
-                    oos.writeObject(new TextMessage("my_username","new_topic","first message of new_topic"));
-                    System.out.println("message sent");
+                    System.out.println("image message sent");
                 }
 
                 oos.writeObject("end");// den tha steiloume allo se afto to topic
@@ -78,6 +79,7 @@ public class EventDeliverySystem {
                 oos2.writeObject("new_topic");//stelnoume pio topic theloume na parakolouthisoume
                 System.out.println(ois2.readObject());
                 System.out.println(ois2.readObject());
+                System.out.println("read the 2 messages of new_topic");
                 oos2.writeObject("end");
                 oos2.writeObject("second_topic");
                 Object object;

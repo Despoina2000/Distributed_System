@@ -136,14 +136,12 @@ public class Broker implements Runnable {
                 ObjectOutputStream broker1Writer = new ObjectOutputStream(broker1Socket.getOutputStream());
                 otherBrokersOutputStreams.add(broker1Writer);
                 broker1Writer.writeObject("broker");
-                broker1Writer.flush();
                 new Thread(new BrokerBrokerConnection(broker1Socket, this)).start(); // kanourio BrokerBrokerConnection
                 System.out.println("Connecting to Broker2.");
                 Socket broker2Socket = new Socket(url, BROKER2);
                 ObjectOutputStream broker2Writer = new ObjectOutputStream(broker2Socket.getOutputStream());
                 otherBrokersOutputStreams.add(broker2Writer);
                 broker2Writer.writeObject("broker");
-                broker2Writer.flush();
                 new Thread(new BrokerBrokerConnection(broker2Socket, this)).start(); // kanourio BrokerBrokerConnection
             }
             System.out.println("Broker listening at port " + port);
@@ -374,7 +372,8 @@ public class Broker implements Runnable {
                 this.username = (String) brokerConsumerInputStream.readObject();
                 System.out.println("consumer username: " + username);
                 //an einai prwti fora pou vlepoume to username kanoume initialize tin usernamesTopicsIndex
-                if (!usernamesTopicsIndex.containsKey(username)) usernamesTopicsIndex.put(username, new HashMap<String, Integer>());
+                if (!usernamesTopicsIndex.containsKey(username))
+                    usernamesTopicsIndex.put(username, new HashMap<String, Integer>());
 
                 sendBrokerTopics(brokerConsumerOutputStream); //tou stelnoume tin lista brokerPortsAndTopics (opote kserei ola ta topics kai pou na apefthinthei gia kathe topic)
                 String consumerMessage;
@@ -396,24 +395,24 @@ public class Broker implements Runnable {
                             int i = 0;
                             if (currentTopic != null) { //an exei thesei currentTopic o consumer
                                 while (!socket.isClosed() && socket.getInputStream().available() == 0) {
-                                        i++;
-                                        if (i==10){
-                                            brokerConsumerOutputStream.writeObject("there?");
-                                            if (!brokerConsumerInputStream.readObject().equals("yes")){
-                                                throw new SocketException();
-                                            }
-                                            i=0;
+                                    i++;
+                                    if (i == 5) {
+                                        brokerConsumerOutputStream.writeObject("there?");
+                                        if (!brokerConsumerInputStream.readObject().equals("yes")) {
+                                            throw new SocketException();
                                         }
-                                        synchronized (parent.topicsMessages.get(currentTopic)) {
-                                            topicsMessages.get(currentTopic).wait(1000);
-                                        }
+                                        i = 0;
+                                    }
+                                    synchronized (parent.topicsMessages.get(currentTopic)) {
+                                        topicsMessages.get(currentTopic).wait(1000);
+                                    }
 //                                        System.out.println("Trying to send new messages to consumer");
-                                        sendMessages(brokerConsumerOutputStream);
+                                    sendMessages(brokerConsumerOutputStream);
                                 }//telos while, opote exei steilei "end" o consumer
                                 System.out.println(brokerConsumerInputStream.readObject());
                             }
                         }
-                    } catch (SocketException e) {
+                    } catch (SocketException | EOFException e) {
                         socket.close();
                         System.out.println("Consumer with username:" + username + " disconnected.");
                     }
@@ -430,19 +429,25 @@ public class Broker implements Runnable {
         private void sendMessages(ObjectOutputStream brokerConsumerOutputStream) {
             try {
                 //stelnei ta kainouria messages gia to currentTopic ston consumer
-                if (!usernamesTopicsIndex.get(username).containsKey(currentTopic)) usernamesTopicsIndex.get(username).put(currentTopic, -1);//an einai kainourio topic to vazoume lista me index -1
+                if (!usernamesTopicsIndex.get(username).containsKey(currentTopic))
+                    usernamesTopicsIndex.get(username).put(currentTopic, -1);//an einai kainourio topic to vazoume lista me index -1
+
                 if (topicsMessages.get(currentTopic).size() > usernamesTopicsIndex.get(username).get(currentTopic)) { // an iparxoun perisotera minimata apo osa exei idi diavasei o consumer
                     for (int i = usernamesTopicsIndex.get(username).get(currentTopic) + 1; i < topicsMessages.get(currentTopic).size(); i++) { // gia kathe kainourio minima
-                        if (topicsMessages.get(currentTopic).get(i).getClass() == TextMessage.class) {
-                            brokerConsumerOutputStream.writeObject(topicsMessages.get(currentTopic).get(i));
-                        } else if (topicsMessages.get(currentTopic).get(i).getClass() == ImageMessage.class) {
-                            //TODO: send Image message
-                            brokerConsumerOutputStream.writeObject(topicsMessages.get(currentTopic).get(i));
-                        } else if (topicsMessages.get(currentTopic).get(i).getClass() == VideoMessage.class) {
-                            //TODO: send Video message
-                            brokerConsumerOutputStream.writeObject(topicsMessages.get(currentTopic).get(i));
+                        try {
+                            if (topicsMessages.get(currentTopic).get(i).getClass() == TextMessage.class) {
+                                brokerConsumerOutputStream.writeObject(topicsMessages.get(currentTopic).get(i));
+                            } else if (topicsMessages.get(currentTopic).get(i).getClass() == ImageMessage.class) {
+                                //TODO: send Image message
+                                brokerConsumerOutputStream.writeObject(topicsMessages.get(currentTopic).get(i));
+                            } else if (topicsMessages.get(currentTopic).get(i).getClass() == VideoMessage.class) {
+                                //TODO: send Video message
+                                brokerConsumerOutputStream.writeObject(topicsMessages.get(currentTopic).get(i));
+                            }
+                            usernamesTopicsIndex.get(username).put(currentTopic, i);//update the current index for this consumer
+                        } catch (SocketException e) {
+                            socket.close();
                         }
-                        usernamesTopicsIndex.get(username).put(currentTopic, i);//update the current index for this consumer
                     }
                 }
             } catch (IOException e) {
