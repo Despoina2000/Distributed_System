@@ -44,4 +44,13 @@ public class ImageMetadata implements Serializable {
         return height;
     }
 
+    @Override
+    public String toString() {
+        return "ImageMetadata{" +
+                "fileName='" + fileName + '\'' +
+                ", fileSize=" + fileSize +
+                ", width=" + width +
+                ", height=" + height +
+                '}';
+    }
 }

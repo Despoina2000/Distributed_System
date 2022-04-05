@@ -61,4 +61,16 @@ public class VideoMetadata implements Serializable {
     public int getFrameRate() {
         return frameRate;
     }
+
+    @Override
+    public String toString() {
+        return "VideoMetadata{" +
+                "fileName='" + fileName + '\'' +
+                ", fileSize=" + fileSize +
+                ", frameWidth=" + frameWidth +
+                ", frameHeight=" + frameHeight +
+                ", length=" + length +
+                ", frameRate=" + frameRate +
+                '}';
+    }
 }

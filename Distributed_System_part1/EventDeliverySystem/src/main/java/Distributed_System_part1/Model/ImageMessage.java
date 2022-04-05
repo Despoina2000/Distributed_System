@@ -66,4 +66,14 @@ public class ImageMessage extends Message implements Serializable {
     public ArrayList<byte[]> getChunkedContent() {
         return chunkedContent;
     }
+
+    @Override
+    public String toString() {
+        return "ImageMessage{" +
+                "username='" + username + '\'' +
+                ", topic='" + topic + '\'' +
+                ", contentType='" + contentType + '\'' +
+                ", imageMetadata=" + imageMetadata +
+                '}';
+    }
 }

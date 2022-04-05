@@ -29,6 +29,7 @@ public class TextMessage extends Message implements Serializable {
     public String toString() {
         return "TextMessage{" +
                 "username='" + username + '\'' +
+                ", topic='" + topic + '\'' +
                 ", content='" + content + '\'' +
                 '}';
     }

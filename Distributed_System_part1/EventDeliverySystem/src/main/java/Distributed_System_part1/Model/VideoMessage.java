@@ -66,4 +66,14 @@ public class VideoMessage extends Message implements Serializable {
     public ArrayList<byte[]> getChunkedContent() {
         return chunkedContent;
     }
+
+    @Override
+    public String toString() {
+        return "VideoMessage{" +
+                "username='" + username + '\'' +
+                ", topic='" + topic + '\'' +
+                ", contentType='" + contentType + '\'' +
+                ", videoMetadata=" + videoMetadata +
+                '}';
+    }
 }
