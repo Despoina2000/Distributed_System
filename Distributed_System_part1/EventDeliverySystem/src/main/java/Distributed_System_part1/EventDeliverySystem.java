@@ -3,9 +3,11 @@
  */
 package Distributed_System_part1;
 
+import Distributed_System_part1.Model.ImageMessage;
 import Distributed_System_part1.Model.TextMessage;
 import Distributed_System_part1.Nodes.Broker;
 import Distributed_System_part1.Nodes.UserNode;
+import Distributed_System_part1.Util.ImageMetadata;
 
 import java.io.*;
 import java.net.Socket;
@@ -21,7 +23,7 @@ public class EventDeliverySystem {
             brokerThread.start();
         } else if (args[0].toLowerCase(Locale.ROOT).startsWith("test")) {
             try {
-                Socket socket = new Socket("localhost", 5555);
+                Socket socket = new Socket("localhost", 4000);
 
                 ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
                 System.out.println("sending \"publisher\"");
@@ -37,18 +39,23 @@ public class EventDeliverySystem {
                 oos.writeObject("new_topic");
                 answer = (String) ois.readObject();
                 if (answer.equals("continue")){
+                    System.out.println("sending fake image message");
+                    oos.writeObject(new ImageMessage("my_username","new_topic", new ImageMetadata("fakeFile",400,400,400)));
+                    //start sending image chunks
+                    oos.writeObject("testbytes".getBytes());
                     System.out.println("sending message");
-                    oos.writeObject("first message of new_topic");
+                    oos.writeObject(new TextMessage("my_username","new_topic","first message of new_topic"));
                     System.out.println("message sent");
                 }
-                oos.writeObject("end");
+
+                oos.writeObject("end");// den tha steiloume allo se afto to topic
 
                 System.out.println("sending \"second_topic\"");
                 oos.writeObject("second_topic");
                 answer = (String) ois.readObject();
                 if (answer.equals("continue")) {
                     System.out.println("sending message");
-                    oos.writeObject("second topic first message");
+                    oos.writeObject(new TextMessage("my_username","second_topic","second topic first message"));
                     System.out.println("message sent");
                 }
             } catch (IOException | ClassNotFoundException e) {
