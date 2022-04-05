@@ -1,9 +1,15 @@
 package Distributed_System_part1.Model;
 
+import Distributed_System_part1.Util.ImageMetadata;
+
+import java.io.File;
+import java.io.Serializable;
+import java.util.ArrayList;
+
 /**
  * basic message class
  */
-public class Message {
+public abstract class Message implements Serializable {
     protected String username;
     protected String topic;
 
@@ -19,4 +25,12 @@ public class Message {
     public String getTopic() {
         return topic;
     }
+
+    public abstract String getContentType();
+
+    public abstract <T> T getMetadata();
+
+    public abstract <T> T getContent();
+
+    public abstract ArrayList<byte[]> getChunkedContent();
 }

@@ -1,9 +1,12 @@
 package Distributed_System_part1.Model;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+
 /**
  * text message, extends Message
  */
-public class TextMessage extends Message {
+public class TextMessage extends Message implements Serializable {
     private String content;
     private String contentType = "text";
 
@@ -12,10 +15,12 @@ public class TextMessage extends Message {
         this.content = content;
     }
 
+    @Override
     public String getContent() {
         return content;
     }
 
+    @Override
     public String getContentType() {
         return contentType;
     }
@@ -26,5 +31,15 @@ public class TextMessage extends Message {
                 "username='" + username + '\'' +
                 ", content='" + content + '\'' +
                 '}';
+    }
+
+    @Override
+    public <T> T getMetadata() {
+        return null;
+    }
+
+    @Override
+    public ArrayList<byte[]> getChunkedContent() {
+        return null;
     }
 }

@@ -3,12 +3,13 @@ package Distributed_System_part1.Model;
 import Distributed_System_part1.Util.VideoMetadata;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * video message, extends Message
  */
-public class VideoMessage extends Message {
+public class VideoMessage extends Message implements Serializable {
     private final String contentType = "video";
     private VideoMetadata videoMetadata;
     private File content;
@@ -46,18 +47,22 @@ public class VideoMessage extends Message {
         this.chunkedContent = chunkedContent;
     }
 
+    @Override
     public String getContentType() {
         return contentType;
     }
 
-    public VideoMetadata getVideoMetadata() {
+    @Override
+    public VideoMetadata getMetadata() {
         return videoMetadata;
     }
 
+    @Override
     public File getContent() {
         return content;
     }
 
+    @Override
     public ArrayList<byte[]> getChunkedContent() {
         return chunkedContent;
     }

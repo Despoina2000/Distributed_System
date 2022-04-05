@@ -1,9 +1,11 @@
 package Distributed_System_part1.Util;
 
+import java.io.Serializable;
+
 /**
  * pojo containing the image metadata
  */
-public class ImageMetadata {
+public class ImageMetadata implements Serializable {
 
     private String fileName;
     /**

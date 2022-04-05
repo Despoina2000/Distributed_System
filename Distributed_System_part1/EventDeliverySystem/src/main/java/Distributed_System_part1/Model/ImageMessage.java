@@ -3,12 +3,13 @@ package Distributed_System_part1.Model;
 import Distributed_System_part1.Util.ImageMetadata;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * image message, extends Message
  */
-public class ImageMessage extends Message {
+public class ImageMessage extends Message implements Serializable {
 
     private final String contentType = "image";
     private ImageMetadata imageMetadata;
@@ -46,18 +47,22 @@ public class ImageMessage extends Message {
         this.chunkedContent = chunkedContent;
     }
 
+    @Override
     public String getContentType() {
         return contentType;
     }
 
-    public ImageMetadata getImageMetadata() {
+    @Override
+    public ImageMetadata getMetadata() {
         return imageMetadata;
     }
 
+    @Override
     public File getContent() {
         return content;
     }
 
+    @Override
     public ArrayList<byte[]> getChunkedContent() {
         return chunkedContent;
     }
