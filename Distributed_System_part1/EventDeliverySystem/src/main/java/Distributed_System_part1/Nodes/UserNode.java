@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.stream.Stream;
 
 /**
  * user node class, starts publisher and consumer
@@ -274,8 +275,13 @@ public class UserNode {
                         }
                     }
                 } catch (IOException | ClassNotFoundException e) {
-                    if (!(e instanceof SocketException || e instanceof EOFException)) {
+                    if (!(e instanceof SocketException || e instanceof EOFException || e instanceof StreamCorruptedException)) {
                         e.printStackTrace();
+                    }
+                    if (e instanceof StreamCorruptedException) {
+                        disconnect();
+                        connectToBroker(currentBrokerPort);
+                        setTopic();
                     }
                 }
             }
