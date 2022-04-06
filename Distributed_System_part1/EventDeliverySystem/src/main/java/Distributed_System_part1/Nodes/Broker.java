@@ -256,7 +256,6 @@ public class Broker implements Runnable {
                 //TODO
 
                 //stelnoume "username?" gia na dwsei o publisher to username tou
-//                brokerPublisherOutputStream = new ObjectOutputStream(socket.getOutputStream());
                 brokerPublisherOutputStream.writeObject("username?");
 
                 //o publisher stelnei to username tou
@@ -367,7 +366,6 @@ public class Broker implements Runnable {
             this.parent = parent;
             this.brokerConsumerInputStream = brokerConsumerInputStream;
             this.brokerConsumerOutputStream = brokerConsumerOutputStream;
-            //edw mporoume na kanoume initialize kai ta input output streams
         }
 
         /**
@@ -379,8 +377,6 @@ public class Broker implements Runnable {
                 System.out.println("Started new brokerConsumerConnectionThread");
                 //TODO
                 //stelnoume "username?" gia na dwsei o consumer to username tou
-//                brokerConsumerOutputStream = new ObjectOutputStream(socket.getOutputStream());
-
                 brokerConsumerOutputStream.writeObject("username?");
                 //o consumer stelnei to username tou
                 this.username = (String) brokerConsumerInputStream.readObject();
@@ -416,7 +412,6 @@ public class Broker implements Runnable {
                                 synchronized (parent.topicsMessages.get(currentTopic)) {
                                     topicsMessages.get(currentTopic).wait(1000);
                                 }
-//                                        System.out.println("Trying to send new messages to consumer");
                                 sendMessages(brokerConsumerOutputStream);
                             }//telos while, opote exei steilei end o consumer
                         }
@@ -497,10 +492,6 @@ public class Broker implements Runnable {
         private Broker parent;
         private ObjectInputStream brokerBrokerInputStream;
 
-//        public BrokerBrokerConnection(Socket socket, Broker parent) {
-//            this.socket = socket;
-//            this.parent = parent;
-//        }
 
         public BrokerBrokerConnection(Socket socket, Broker parent, ObjectInputStream brokerBrokerInputStream) {
             this.socket = socket;
@@ -513,12 +504,7 @@ public class Broker implements Runnable {
          */
         @Override
         public void run() {
-//            try {
-//                if (brokerBrokerInputStream == null)
-//                    brokerBrokerInputStream = new ObjectInputStream(socket.getInputStream());
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
+
             System.out.println("Started new brokerBrokerConnectionThread");
             while (!socket.isClosed()) { // oso einai anoixto to socket
                 try {

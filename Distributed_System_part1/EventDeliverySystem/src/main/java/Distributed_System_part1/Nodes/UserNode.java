@@ -36,7 +36,6 @@ public class UserNode {
      * Main thread: publisher, other thread: consumer
      */
     public UserNode() {
-        //TODO
         //read and set username
         brokerPortsAndTopics = new HashMap<Integer, ArrayList<String>>();
         topicsMessages = new HashMap<String, ArrayList<Message>>();
@@ -75,17 +74,7 @@ public class UserNode {
      * arxizei to command line interface gia na dwsoume entoles (px /topic, message klp)
      */
     private void startCLI() {
-        //TODO
-        /*
-         * pithanes entoles:
-         * /topic <topic> (currentTopic = <topic>; publisher.setTopic(); consumerThread.setTopic();)
-         * /topics (consumer.requestTopics)
-         * <sketo message> (sendMessage(new TextMessage...))
-         * /image <imagepath> (sendMessage(new ImageMessage xwris to content)) meta arxizoume kai stelnoume ta byte[]
-         *                 apo tin ArrayList<byte[]> splitFileToChunks isws me tin sendFileChunks(splitFileToChunks)
-         * /video <videopath> (sendMessage(new VideoMessage xwris to content)) meta arxizoume kai stelnoume ta byte[]
-         *                apo tin ArrayList<byte[]> splitFileToChunks isws me tin sendFileChunks(splitFileToChunks)
-         */
+
         System.out.println("Command line interface started:");
         String userInput = " ";
         while (!userInput.equals("/quit")) {
@@ -155,7 +144,6 @@ public class UserNode {
         }
 
         public void setTopic() {
-            //TODO
 
             //TODO: check an exoume idi tin pliroforia sto brokerPortsAndTopics allios:
             try {
@@ -221,7 +209,6 @@ public class UserNode {
 
         @Override
         public void run() {
-            //TODO
             connectToBroker(currentBrokerPort);
             requestTopics();
             processIncomingMessages();
@@ -248,7 +235,6 @@ public class UserNode {
 
         public void setTopic() {
             try {
-                //TODO
                 //send to broker currentTopic
                 objectOutputStream.writeObject(currentTopic);
                 //edw mporoume na kanoume print olo to istoriko gia to currentTopic apo to topicsMessages kai tha perimenoume gia kainouria minimata
@@ -295,10 +281,7 @@ public class UserNode {
         }
 
         public void requestTopics() {
-            //TODO
             //zitaei tin lista me ta topic apo ton broker
-            //receive lista brokerPortsAndTopics
-            //kanei update tin topikh brokerPortsAndTopics
             try {
                 objectOutputStream.writeObject("/getTopics");
             } catch (IOException e) {
