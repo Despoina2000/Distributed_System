@@ -21,12 +21,13 @@ public class UserNode {
     public static final int BROKER2 = 5555;
     public static final int BROKER3 = 5984;
     public final String url = "localhost";
+
     public volatile String username;
     public volatile int currentBrokerPort;
     public volatile String currentTopic = null;
     public volatile HashMap<Integer, ArrayList<String>> brokerPortsAndTopics;
     public volatile HashMap<String, ArrayList<Message>> topicsMessages; //edw mporoume na kratame osa minimata exoume diavasei idi
-    public volatile boolean newTopicSet = false;
+
     private Publisher publisher;
     private Consumer consumer;
     private BufferedReader br;
@@ -141,10 +142,6 @@ public class UserNode {
 
         public void connectToBroker(int port) {
             try {
-                if (!(socket == null) && socket.isConnected()) {
-                    socket.close();
-                }
-
                 socket = new Socket(url, port);
                 objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
                 objectOutputStream.writeObject("publisher");
@@ -162,9 +159,6 @@ public class UserNode {
 
             //TODO: check an exoume idi tin pliroforia sto brokerPortsAndTopics allios:
             try {
-                if (newTopicSet) {
-                    objectOutputStream.writeObject("end");
-                }
                 //send to broker currentTopic
                 objectOutputStream.writeObject(currentTopic);
                 //perimenoume apantisi apo broker,
@@ -176,11 +170,13 @@ public class UserNode {
                     // an i apantisi einai broker port thetoume currentBrokerPort = port
                     // kai kanoume connectToBroker(port), consumer.connectToBroker(port) kai ksana setTopic kai consumer.setTopic
                     currentBrokerPort = Integer.parseInt((String) brokerAnswer);
+                    publisher.disconnect();
                     publisher.connectToBroker(currentBrokerPort);
-                    consumer.connectToBroker(currentBrokerPort);
-                    newTopicSet = false;
                     publisher.setTopic();
+                    consumer.disconnect();
+                    consumer.connectToBroker(currentBrokerPort);
                     consumer.setTopic();
+
                 }
 
             } catch (IOException | ClassNotFoundException e) {
@@ -200,6 +196,17 @@ public class UserNode {
         public void sendFileChunks(ArrayList<byte[]> fileChunks) {
             //TODO
         }
+
+        public void disconnect(){
+            try {
+                objectOutputStream.writeObject("/disconnect");
+                objectOutputStream.close();
+                objectInputStream.close();
+                socket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private class Consumer extends Thread {
@@ -216,22 +223,19 @@ public class UserNode {
         public void run() {
             //TODO
             connectToBroker(currentBrokerPort);
+            requestTopics();
             processIncomingMessages();
         }
 
         public void connectToBroker(int port) {
 
             try {
-                //close socket an iparxei sindesi me proigoumeno broker
-                if (!(socket == null) && socket.isConnected()) {
-                    socket.close();
-                }
                 //connect to broker at port
                 socket = new Socket(url, port);
                 objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+                objectOutputStream.flush();
                 //send "consumer"
                 objectOutputStream.writeObject("consumer");
-                objectOutputStream.flush();
                 //read "username?"
                 objectInputStream = new ObjectInputStream(socket.getInputStream());
                 if (objectInputStream.readObject().equals("username?"))
@@ -246,12 +250,7 @@ public class UserNode {
             try {
                 //TODO
                 //send to broker currentTopic
-                if (newTopicSet) {
-                    objectOutputStream.writeObject("end");
-                }
                 objectOutputStream.writeObject(currentTopic);
-                newTopicSet = true;
-
                 //edw mporoume na kanoume print olo to istoriko gia to currentTopic apo to topicsMessages kai tha perimenoume gia kainouria minimata
             } catch (IOException e) {
                 e.printStackTrace();
@@ -268,7 +267,7 @@ public class UserNode {
             Object incomingMessage;
             while (true) {
                 try {
-                    if (socket.getInputStream().available() != 0) {
+                    if (socket.getInputStream().available() > 0 && !socket.isClosed()) {
                         incomingMessage = objectInputStream.readObject();
                         if (TextMessage.class.equals(incomingMessage.getClass())) {
                             System.out.println(incomingMessage);
@@ -301,10 +300,18 @@ public class UserNode {
             //receive lista brokerPortsAndTopics
             //kanei update tin topikh brokerPortsAndTopics
             try {
-                if (newTopicSet) {
-                    objectOutputStream.writeObject("end");
-                }
                 objectOutputStream.writeObject("/getTopics");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        public void disconnect(){
+            try {
+                objectOutputStream.writeObject("/disconnect");
+                objectOutputStream.close();
+                objectInputStream.close();
+                socket.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
