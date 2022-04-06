@@ -257,10 +257,11 @@ public class UserNode {
                         incomingMessage = objectInputStream.readObject();
                         if (TextMessage.class.equals(incomingMessage.getClass())) {
                             System.out.println(incomingMessage);
+                            //TODO: add message to topicsMessages list
                         } else if (ImageMessage.class.equals(incomingMessage.getClass())) {
-                            //handle ImageMessage
+                            //TODO: handle ImageMessage
                         } else if (VideoMessage.class.equals(incomingMessage.getClass())) {
-                            //handle VideoMessage
+                            //TODO: handle VideoMessage
                         } else if (brokerPortsAndTopics.getClass().equals(incomingMessage.getClass())) {
                             //receive lista brokerPortsAndTopics - update tin topikh brokerPortsAndTopics
                             brokerPortsAndTopics.putAll((Map<? extends Integer, ? extends ArrayList<String>>) incomingMessage);
