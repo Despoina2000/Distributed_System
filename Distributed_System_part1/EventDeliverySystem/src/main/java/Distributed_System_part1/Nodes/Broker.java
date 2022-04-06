@@ -198,7 +198,7 @@ public class Broker implements Runnable {
      */
     private int getResponsibleBrokerPort(String topic) {
         //TODO
-        return 4000;
+        return BROKER2;
     }
 
     /**
@@ -276,6 +276,8 @@ public class Broker implements Runnable {
                                 brokerPublisherOutputStream.writeObject("continue");// leme ston publisher oti mporei na sinexisei
                             } else { //an oxi xrisimopoioume tin getResponsibleBrokerPort(topic) gia na vroume ton katalilo broker kai tou proothoume tin port
                                 brokerPublisherOutputStream.writeObject(Integer.toString(getResponsibleBrokerPort(topic)));
+                                System.out.println("sent " + Integer.toString(getResponsibleBrokerPort(topic)));
+                                break;
                             }
 
                             Object incomingMessage;
