@@ -185,7 +185,7 @@ public class UserNode {
             //TODO
         }
 
-        public void disconnect(){
+        public void disconnect() {
             try {
                 objectOutputStream.writeObject("/disconnect");
                 objectOutputStream.close();
@@ -290,7 +290,7 @@ public class UserNode {
             }
         }
 
-        public void disconnect(){
+        public void disconnect() {
             try {
                 objectOutputStream.writeObject("/disconnect");
                 objectOutputStream.close();

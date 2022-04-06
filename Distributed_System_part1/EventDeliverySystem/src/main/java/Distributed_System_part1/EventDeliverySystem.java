@@ -3,98 +3,20 @@
  */
 package Distributed_System_part1;
 
-import Distributed_System_part1.Model.ImageMessage;
-import Distributed_System_part1.Model.TextMessage;
+
 import Distributed_System_part1.Nodes.Broker;
 import Distributed_System_part1.Nodes.UserNode;
-import Distributed_System_part1.Util.ImageMetadata;
 
-import java.io.*;
-import java.net.Socket;
 import java.util.Locale;
 
 public class EventDeliverySystem {
 
     public static void main(String[] args) {
-        if (args[0].toLowerCase(Locale.ROOT).startsWith("use")){
+        if (args[0].toLowerCase(Locale.ROOT).startsWith("use")) {
             UserNode userNode = new UserNode();
         } else if (args[0].toLowerCase(Locale.ROOT).startsWith("bro")) {
             Thread brokerThread = new Thread(new Broker());
             brokerThread.start();
-        } else if (args[0].toLowerCase(Locale.ROOT).startsWith("test")) {
-            try {
-                //publisher
-                Socket socket = new Socket("localhost", 4000);
-
-                ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
-                System.out.println("sending \"publisher\"");
-                oos.writeObject("publisher");
-                ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
-                String answer = (String) ois.readObject();
-                System.out.println(answer);
-                if (answer.equals("username?")){
-                    System.out.println("sending \"my_username\"");
-                    oos.writeObject("my_username");
-                }
-                System.out.println("sending \"new_topic\"");
-                oos.writeObject("new_topic");
-                answer = (String) ois.readObject();
-                if (answer.equals("continue")){
-                    System.out.println("sending message");
-                    oos.writeObject(new TextMessage("my_username","new_topic","first message of new_topic"));
-                    System.out.println("message sent");
-                    System.out.println("sending fake image message");
-                    oos.writeObject(new ImageMessage("my_username","new_topic", new ImageMetadata("fakeFile",400,400,400)));
-                    //start sending image chunks
-                    oos.writeObject("testbytes".getBytes());
-                    System.out.println("image message sent");
-                }
-
-                oos.writeObject("end");// den tha steiloume allo se afto to topic
-
-                System.out.println("sending \"second_topic\"");
-                oos.writeObject("second_topic");
-                answer = (String) ois.readObject();
-                if (answer.equals("continue")) {
-                    System.out.println("sending message");
-                    oos.writeObject(new TextMessage("my_username","second_topic","second topic first message"));
-                    System.out.println("message sent");
-                }
-
-                //consumer
-                Socket socket2 = new Socket("localhost", 4000);
-                ObjectOutputStream oos2 = new ObjectOutputStream(socket2.getOutputStream());
-                System.out.println("sending \"consumer\"");
-                oos2.writeObject("consumer");
-                ObjectInputStream ois2 = new ObjectInputStream(socket2.getInputStream());
-                answer = (String) ois2.readObject();
-                System.out.println(answer);
-                if (answer.equals("username?")){
-                    System.out.println("sending \"my_username\"");
-                    oos2.writeObject("my_username");
-                }
-                Object brokerTopics = ois2.readObject(); // o broker stelnei tin lista brokerPortsAndTopics
-                System.out.println(brokerTopics);
-
-                oos2.writeObject("new_topic");//stelnoume pio topic theloume na parakolouthisoume
-                System.out.println(ois2.readObject());
-                System.out.println(ois2.readObject());
-                System.out.println("read the 2 messages of new_topic");
-                oos2.writeObject("end");
-                oos2.writeObject("second_topic");
-                Object object;
-                while (true) {
-                    object = ois2.readObject();
-                    if (object.equals("there?")){
-                        oos2.writeObject("yes");
-                    } else {
-                        System.out.println(object);
-                    }
-                }
-
-            } catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
-            }
         }
     }
 }

@@ -401,7 +401,7 @@ public class Broker implements Runnable {
                                     brokerConsumerOutputStream.writeObject("there?");
                                     Object consumerAnswer = brokerConsumerInputStream.readObject();
                                     if (!consumerAnswer.equals("yes")) {
-                                        if (consumerAnswer.equals("/getTopics")){
+                                        if (consumerAnswer.equals("/getTopics")) {
                                             sendBrokerTopics();
                                         } else {
                                             throw new SocketException();
