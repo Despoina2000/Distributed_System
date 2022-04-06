@@ -1,9 +1,11 @@
 package Distributed_System_part1.Util;
 
+import java.io.Serializable;
+
 /**
  * pojo containing the video metadata
  */
-public class VideoMetadata {
+public class VideoMetadata implements Serializable {
 
     private String fileName;
     /**
@@ -58,5 +60,17 @@ public class VideoMetadata {
 
     public int getFrameRate() {
         return frameRate;
+    }
+
+    @Override
+    public String toString() {
+        return "VideoMetadata{" +
+                "fileName='" + fileName + '\'' +
+                ", fileSize=" + fileSize +
+                ", frameWidth=" + frameWidth +
+                ", frameHeight=" + frameHeight +
+                ", length=" + length +
+                ", frameRate=" + frameRate +
+                '}';
     }
 }

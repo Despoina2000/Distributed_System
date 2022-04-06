@@ -52,6 +52,7 @@ task runBroker(type: JavaExec) {
 task runUserNode(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     mainClass = 'Distributed_System_part1.EventDeliverySystem'
+    standardInput = System.in
     args 'usernode'
 }
 
@@ -64,11 +65,13 @@ task runbro(type: JavaExec) {
 task runuser(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     mainClass = 'Distributed_System_part1.EventDeliverySystem'
+    standardInput = System.in
     args 'usernode'
 }
 
 task runuse(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     mainClass = 'Distributed_System_part1.EventDeliverySystem'
+    standardInput = System.in
     args 'usernode'
 }

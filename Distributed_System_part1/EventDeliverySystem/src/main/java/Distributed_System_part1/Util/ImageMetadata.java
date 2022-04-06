@@ -1,9 +1,11 @@
 package Distributed_System_part1.Util;
 
+import java.io.Serializable;
+
 /**
  * pojo containing the image metadata
  */
-public class ImageMetadata {
+public class ImageMetadata implements Serializable {
 
     private String fileName;
     /**
@@ -42,4 +44,13 @@ public class ImageMetadata {
         return height;
     }
 
+    @Override
+    public String toString() {
+        return "ImageMetadata{" +
+                "fileName='" + fileName + '\'' +
+                ", fileSize=" + fileSize +
+                ", width=" + width +
+                ", height=" + height +
+                '}';
+    }
 }

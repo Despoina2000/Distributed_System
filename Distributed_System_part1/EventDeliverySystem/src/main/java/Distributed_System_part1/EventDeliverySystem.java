@@ -3,6 +3,7 @@
  */
 package Distributed_System_part1;
 
+
 import Distributed_System_part1.Nodes.Broker;
 import Distributed_System_part1.Nodes.UserNode;
 
@@ -11,10 +12,11 @@ import java.util.Locale;
 public class EventDeliverySystem {
 
     public static void main(String[] args) {
-        if (args[0].toLowerCase(Locale.ROOT).startsWith("use")){
+        if (args[0].toLowerCase(Locale.ROOT).startsWith("use")) {
             UserNode userNode = new UserNode();
         } else if (args[0].toLowerCase(Locale.ROOT).startsWith("bro")) {
-            Broker broker = new Broker();
+            Thread brokerThread = new Thread(new Broker());
+            brokerThread.start();
         }
     }
 }
