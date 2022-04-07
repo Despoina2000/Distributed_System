@@ -247,7 +247,7 @@ public class UserNode {
                     //send username
                     objectOutputStream.writeObject(username);
             } catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
+                if (!(e instanceof SocketException)) e.printStackTrace();
             }
         }
 
@@ -259,7 +259,7 @@ public class UserNode {
                 objectOutputStream.writeObject(currentTopic);
                 //edw mporoume na kanoume print olo to istoriko gia to currentTopic apo to topicsMessages kai tha perimenoume gia kainouria minimata
             } catch (IOException e) {
-                e.printStackTrace();
+                if (!(e instanceof SocketException)) e.printStackTrace();
             }
         }
 
