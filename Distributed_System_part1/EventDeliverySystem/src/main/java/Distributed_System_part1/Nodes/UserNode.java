@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-import java.util.stream.Stream;
 
 /**
  * user node class, starts publisher and consumer
@@ -72,7 +71,7 @@ public class UserNode {
     }
 
     /**
-     * arxizei to command line interface gia na dwsoume entoles (px /topic, message klp)
+     * arxizei to command line interface gia na dwsoume entoles (px /topic , message klp)
      */
     private void startCLI() {
 
@@ -130,6 +129,11 @@ public class UserNode {
             connectToBroker(currentBrokerPort);
         }
 
+        /**
+         * kanei connect ston broker, kanei initialize ta object input/output streams
+         * stelnei ston broker oti einai "publisher" kai meta stelnei to username tou
+         * @param port
+         */
         public void connectToBroker(int port) {
             try {
                 socket = new Socket(url, port);
@@ -144,6 +148,12 @@ public class UserNode {
             }
         }
 
+        /**
+         * sends to broker currentTopic, perimenei apantisi apo ton broker
+         * an i apantisi einai "continue" mporei na arxisei na stelnei minimata sto currentTopic
+         * an i apantisi einai kapoia port simainei oti prepei na sindethei ston katallilo broker
+         * kai na ksanasteilei to topic mexri na akousei "continue"
+         */
         public void setTopic() {
 
             //TODO: check an exoume idi tin pliroforia sto brokerPortsAndTopics allios:
@@ -186,6 +196,9 @@ public class UserNode {
             //TODO
         }
 
+        /**
+         * sends "/disconnect" to Broker and then closes streams and socket
+         */
         public void disconnect() {
             try {
                 objectOutputStream.writeObject("/disconnect");
@@ -215,8 +228,12 @@ public class UserNode {
             processIncomingMessages();
         }
 
+        /**
+         * kanei connect ston broker, kanei initialize ta object input/output streams
+         * stelnei ston broker oti einai "consumer" kai meta stelnei to username tou
+         * @param port
+         */
         public void connectToBroker(int port) {
-
             try {
                 //connect to broker at port
                 socket = new Socket(url, port);
@@ -234,9 +251,11 @@ public class UserNode {
             }
         }
 
+        /**
+         * sends to broker currentTopic
+         */
         public void setTopic() {
             try {
-                //send to broker currentTopic
                 objectOutputStream.writeObject(currentTopic);
                 //edw mporoume na kanoume print olo to istoriko gia to currentTopic apo to topicsMessages kai tha perimenoume gia kainouria minimata
             } catch (IOException e) {
@@ -244,6 +263,10 @@ public class UserNode {
             }
         }
 
+        /**
+         * dexetai messages apo ton broker kai pratei analoga me to Class tou incoming message
+         * px. incomingMessage.getClass().equals(ImageMessage.class) kanei process image message
+         */
         private void processIncomingMessages() {
             //TODO
             //if message.getContentType=="text"/"image"/"video/ do this..
@@ -287,8 +310,10 @@ public class UserNode {
             }
         }
 
+        /**
+         * zitaei tin lista me ta ports kai topics apo ton broker
+         */
         public void requestTopics() {
-            //zitaei tin lista me ta topic apo ton broker
             try {
                 objectOutputStream.writeObject("/getTopics");
             } catch (IOException e) {
@@ -296,6 +321,9 @@ public class UserNode {
             }
         }
 
+        /**
+         * sends "/disconnect" to Broker and then closes streams and socket
+         */
         public void disconnect() {
             try {
                 objectOutputStream.writeObject("/disconnect");

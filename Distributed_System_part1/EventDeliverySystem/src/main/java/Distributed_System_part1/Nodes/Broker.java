@@ -112,6 +112,7 @@ public class Broker implements Runnable {
     /**
      * Edw arxizei na trexei o broker se diko tou thread.
      * Mesa tha dimiourgei kainouria thread gia kathe connection.
+     * Arxika, an einai o defteros i tritos broker kanei establish sindesi me tous ipolipous brokers
      */
     @Override
     public void run() {
@@ -149,6 +150,7 @@ public class Broker implements Runnable {
                 new Thread(new BrokerBrokerConnection(broker2Socket, this, broker2Reader)).start(); // kanourio BrokerBrokerConnection
             }
             System.out.println("Broker listening at port " + port);
+
             while (true) {
                 acceptConnection();
             }
@@ -161,9 +163,8 @@ public class Broker implements Runnable {
     /**
      * An to connection einai apo Publisher dimiourgei kainourio thread BrokerPublisherConnection,
      * an einai Consumer kainourio thread BrokerConsumerConnection
-     * kai stis 2 periptwseis pernaei to socket kai 'this'(parent broker) sto thread
-     * <p>
-     * an einai Broker prosthetoume to socket tou stin lista otherBrokers
+     * kai stis 2 periptwseis pernaei to socket,'this'(parent broker) kai ta object output/input streams sto thread.
+     * An einai Broker prosthetoume to outputstream tou stin lista otherBrokersOutputStreams(gia tin notifyBrokers)
      */
     private void acceptConnection() {
         //to prwto minima einai "publisher","consumer" h "broker"
@@ -175,7 +176,7 @@ public class Broker implements Runnable {
             String firstLine = (String) newConnectionInput.readObject();
             System.out.println("first line received: " + firstLine);
             switch (firstLine) {
-                case "broker" -> {  //an to prwto minima einai broker swzoume to socket stin lista otherBrokers
+                case "broker" -> {  //an to prwto minima einai broker swzoume to outputstream tou stin lista otherBrokersOutputStreams
                     System.out.println("Broker connected, saving stream to list otherBrokersOutputStreams.");
                     otherBrokersOutputStreams.add(newConnectionOutput);
                     for (ObjectOutputStream oos : otherBrokersOutputStreams) oos.flush();
@@ -209,7 +210,7 @@ public class Broker implements Runnable {
     }
 
     /**
-     * stelnoume stous allous broker (lista otherBrokers) to kainourio topic
+     * stelnoume stous allous broker (lista otherBrokersOutputStreams) to kainourio topic
      * kai aftoi to prosthetoun stin brokerPortAndTopics tous mazi me to port mas
      *
      * @param topic String topic
@@ -227,7 +228,7 @@ public class Broker implements Runnable {
 
     /**
      * h acceptConnection dimiourgei kainourio thread gia kathe Publisher connected,
-     * ston constructor pairname (socket,this) to this einai o parent broker
+     * ston constructor pairname (socket,this,objectoutputstream,objectinputstream) to this einai o parent broker
      * gia na kalesoume px parent.notifyBrokers(topic)
      */
     private class BrokerPublisherConnection implements Runnable {
@@ -249,6 +250,15 @@ public class Broker implements Runnable {
 
         /**
          * handles tin epikoinwnia me ton Publisher
+         *
+         * arxika rotaei ton xristi gia to username tou kai to swzei sto this.username
+         * meta mpenei sto while loop pou koitaei an to incoming message anoikei stin superclass Message.class
+         * xeirizetai to message analoga me tin class tou (px ImageClass)
+         * an to incoming message den anoikei stin superclass Message.class simainei oti o user esteile string
+         * opote koitaei: an to string einai "/disconnect" kleinei ta streams kai to socket
+         * alliws to string einai pio topic thelei o user
+         * an aftos o broker einai responsible gia to topic stelnei "continue"
+         * allios xrisimopoiei tin getResponsibleBroker(topic) kai stelnei tin port tou katallilou Broker
          */
         @Override
         public void run() {
@@ -305,8 +315,7 @@ public class Broker implements Runnable {
 
                             } else if (getResponsibleBrokerPort(currentTopic) == port) { //an aftos o broker einai ipefthinos gia to kainourio topic (an i getResponsibleBrokerPort vgazei tin diki mas port diladi)
                                 //dimiourgoume to topic kai to vazoume mazi me ton user stin lista usernamesTopicsIndex me index -1
-                                if (!topicsMessages.containsKey(currentTopic))
-                                    topicsMessages.put(currentTopic, new ArrayList<Message>());
+                                if (!topicsMessages.containsKey(currentTopic)) topicsMessages.put(currentTopic, new ArrayList<Message>());
                                 usernamesTopicsIndex.get(username).put(currentTopic, -1);
                                 brokerPortsAndTopics.get(port).add(currentTopic);//to prosthetoume kai stin lista brokerPortAndTopics stin diki mas port
                                 parent.notifyBrokers(currentTopic);// kai kanoume notify tous brokers gia to kainourio topic
@@ -349,7 +358,7 @@ public class Broker implements Runnable {
 
     /**
      * h acceptConnection dimiourgei kainourio thread gia kathe Consumer connected,
-     * ston constructor pairname (socket,this) to this einai o parent broker
+     * ston constructor pairname (socket,this,objectoutputstream,objectinputstream) to this einai o parent broker
      */
     private class BrokerConsumerConnection implements Runnable {
         private Socket socket;
@@ -370,6 +379,17 @@ public class Broker implements Runnable {
 
         /**
          * handles tin epikoinwnia me ton Consumer
+         *
+         * arxika rotaei ton xristi gia to username tou kai to swzei sto this.username
+         * meta mpainei sto while loop opou stelnei ta minimata tou currentTopic ston consumer
+         * an o consumer steilei kapoio string koitame:
+         * an to string einai "/getTopics" tou stelnoume ta topics me tin sendBrokerTopics()
+         * an to string einai "/disconnect" kleinoume ta streams kai tin socket
+         * alliws to string einai to kainourio topic pou thelei o consumer opote to thetoume ws current topic
+         *
+         * episis kathe 5 defterolepta stelnei ston consumer "there?" kai perimenei apantisi "yes"
+         * afto to xrisimopoioume gia na kseroume oti o consumer sinexizei kai einai online kai den exei kanei disconnect
+         * an den steilei apantisi "yes" kleinoume ta streams kai to socket
          */
         @Override
         public void run() {
@@ -473,6 +493,9 @@ public class Broker implements Runnable {
             }
         }
 
+        /**
+         * stelnei ston consumer ta available ports+topics
+         */
         private void sendBrokerTopics() {
             try {
                 brokerConsumerOutputStream.reset();
@@ -485,7 +508,7 @@ public class Broker implements Runnable {
 
     /**
      * h acceptConnection dimiourgei kainourio thread gia kathe Broker connected,
-     * ston constructor pairname (socket,this) to this einai o parent broker
+     * ston constructor pairname (socket,this,objectinputstream) to this einai o parent broker
      */
     private class BrokerBrokerConnection implements Runnable {
         private Socket socket;
@@ -501,6 +524,9 @@ public class Broker implements Runnable {
 
         /**
          * handles tin epikoinwnia me tous allous Broker
+         *
+         * perimenei minima apo kapoion broker
+         * to minima tha einai port+topic opote to vazei stin brokerPortsAndTopics
          */
         @Override
         public void run() {
