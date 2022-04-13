@@ -86,6 +86,7 @@ public class UserNode {
      */
     private void startCLI() {
 
+
         System.out.println("Command line interface started:");
         String userInput = " ";
         while (!userInput.equals("/quit")) {
@@ -103,8 +104,14 @@ public class UserNode {
                     consumer.requestTopics();
                 } else if (userInput.startsWith("/image ")) {
                     // send ImageMessage
+                    System.out.println(Thread.currentThread().getContextClassLoader().getResource("images/" + userInput.substring(7) + ".jpg"));
                 } else if (userInput.startsWith("/video ")) {
                     // send VideoMessage
+                    System.out.println(Thread.currentThread().getContextClassLoader().getResource("videos/" + userInput.substring(7) + ".mp4"));
+                } else if (userInput.equals("/images")) {
+                    System.out.println("clouds\ndog\nflowers\nparis\nUse /image <image name> to send image.");
+                } else if (userInput.equals("/videos")) {
+                    System.out.println("birds\nmolten-metal\nslowmo-dog\nwingsuit\nUse /video <video name> to send image.");
                 } else if (userInput.equals("/quit")) {
                     break;
                 } else {
@@ -116,6 +123,8 @@ public class UserNode {
                     System.out.println("*   <message>           : send new TextMessage        *");
                     System.out.println("*   /image <imagepath>  : send new ImageMessage       *");
                     System.out.println("*   /video <videopath>  : send new VideoMessage       *");
+                    System.out.println("*   /images             : lists available images      *");
+                    System.out.println("*   /videos             : lists available videos      *");
                     System.out.println("*   /help               : display this message        *");
                     System.out.println("*   /quit               : close application           *");
                     System.out.println("*******************************************************");
