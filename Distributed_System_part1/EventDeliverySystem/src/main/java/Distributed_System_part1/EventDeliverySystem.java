@@ -3,9 +3,9 @@
  */
 package Distributed_System_part1;
 
-
 import Distributed_System_part1.Nodes.Broker;
 import Distributed_System_part1.Nodes.UserNode;
+import Distributed_System_part1.Util.Util;
 
 import java.util.Locale;
 
@@ -17,6 +17,11 @@ public class EventDeliverySystem {
         } else if (args[0].toLowerCase(Locale.ROOT).startsWith("bro")) {
             Thread brokerThread = new Thread(new Broker());
             brokerThread.start();
+        } else if (args[0].toLowerCase(Locale.ROOT).startsWith("test")) {
+            // code here
+            // System.out.println("doulevei");
+            // Util util = new Util();
+            // util.hash("topic");
         }
     }
 }

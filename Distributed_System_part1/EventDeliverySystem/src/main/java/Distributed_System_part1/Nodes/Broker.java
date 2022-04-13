@@ -433,7 +433,7 @@ public class Broker implements Runnable {
                                     topicsMessages.get(currentTopic).wait(1000);
                                 }
                                 sendMessages(brokerConsumerOutputStream);
-                            }//telos while, opote exei steilei end o consumer
+                            }//telos while, opote exei steilei kati o consumer
                         }
                         if ((consumerMessage = (String) brokerConsumerInputStream.readObject()) != null) {
                             if (consumerMessage.equals("/getTopics")) {
