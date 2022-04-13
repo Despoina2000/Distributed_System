@@ -111,7 +111,7 @@ public class UserNode {
                 } else if (userInput.equals("/images")) {
                     System.out.println("clouds\ndog\nflowers\nparis\nUse /image <image name> to send image.");
                 } else if (userInput.equals("/videos")) {
-                    System.out.println("birds\nmolten-metal\nslowmo-dog\nwingsuit\nUse /video <video name> to send image.");
+                    System.out.println("birds\nmolten-metal\nslowmo-dog\nwingsuit\nUse /video <video name> to send video.");
                 } else if (userInput.equals("/quit")) {
                     break;
                 } else {
