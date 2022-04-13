@@ -50,19 +50,30 @@ public class UserNode {
         Random random = new Random();
         switch (random.nextInt(3)) {
             case 0 -> this.currentBrokerPort = BROKER1;
-            case 1 -> this.currentBrokerPort = BROKER1;
-            case 2 -> this.currentBrokerPort = BROKER1;
+            case 1 -> this.currentBrokerPort = BROKER2;
+            case 2 -> this.currentBrokerPort = BROKER3;
         }
         publisher = new Publisher();
         consumer = new Consumer(this);
         consumer.start();
         // create new Folder with name username (to store images and videos)
+        File userDirectory = new File("./" + username);
+        if (userDirectory.mkdirs()) System.out.println("Created user directory.");
+        userDirectory.deleteOnExit();
 
-        //destructor to delete folder and files, kaleitai otan kleinoume to app me CTRL+C
+        //destructor to delete folder and files, kaleitai otan kleinoume to app me CTRL+C h /quit
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
-                //TODO: delete all files in folder "username" and delete folder
+                if (userDirectory.exists()) {
+                    File[] allContents = userDirectory.listFiles();
+                    if (allContents != null) {
+                        for (File file : allContents) {
+                            if (file.delete()) System.out.println("Deleted file:" + file.getName());;
+                        }
+                    }
+                }
+                if (userDirectory.delete()) System.out.println("Deleted folder:" + userDirectory.getName());
             }
         });
 
@@ -184,7 +195,7 @@ public class UserNode {
         }
 
         public void sendMessage(Message message) {
-            //TODO
+            //TODO: handle Text/Image/VideoMessage
             try {
                 objectOutputStream.writeObject(message);
             } catch (IOException e) {
