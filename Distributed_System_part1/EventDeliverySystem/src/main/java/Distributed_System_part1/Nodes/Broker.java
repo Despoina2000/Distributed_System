@@ -325,7 +325,7 @@ public class Broker implements Runnable {
                                 System.out.println("sent " + Integer.toString(getResponsibleBrokerPort(currentTopic)));
                             }
                         }
-                    } catch (SocketException e) {
+                    } catch (SocketException | EOFException e) {
                         socket.close();
                         System.out.println("Publisher with username:" + username + " disconnected.");
                     }

@@ -50,19 +50,30 @@ public class UserNode {
         Random random = new Random();
         switch (random.nextInt(3)) {
             case 0 -> this.currentBrokerPort = BROKER1;
-            case 1 -> this.currentBrokerPort = BROKER1;
-            case 2 -> this.currentBrokerPort = BROKER1;
+            case 1 -> this.currentBrokerPort = BROKER2;
+            case 2 -> this.currentBrokerPort = BROKER3;
         }
         publisher = new Publisher();
         consumer = new Consumer(this);
         consumer.start();
         // create new Folder with name username (to store images and videos)
+        File userDirectory = new File("./" + username);
+        if (userDirectory.mkdirs()) System.out.println("Created user directory.");
+        userDirectory.deleteOnExit();
 
-        //destructor to delete folder and files, kaleitai otan kleinoume to app me CTRL+C
+        //destructor to delete folder and files, kaleitai otan kleinoume to app me CTRL+C h /quit
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
-                //TODO: delete all files in folder "username" and delete folder
+                if (userDirectory.exists()) {
+                    File[] allContents = userDirectory.listFiles();
+                    if (allContents != null) {
+                        for (File file : allContents) {
+                            if (file.delete()) System.out.println("Deleted file:" + file.getName());;
+                        }
+                    }
+                }
+                if (userDirectory.delete()) System.out.println("Deleted folder:" + userDirectory.getName());
             }
         });
 
@@ -74,6 +85,7 @@ public class UserNode {
      * arxizei to command line interface gia na dwsoume entoles (px /topic , message klp)
      */
     private void startCLI() {
+
 
         System.out.println("Command line interface started:");
         String userInput = " ";
@@ -92,8 +104,14 @@ public class UserNode {
                     consumer.requestTopics();
                 } else if (userInput.startsWith("/image ")) {
                     // send ImageMessage
+                    System.out.println(Thread.currentThread().getContextClassLoader().getResource("images/" + userInput.substring(7) + ".jpg"));
                 } else if (userInput.startsWith("/video ")) {
                     // send VideoMessage
+                    System.out.println(Thread.currentThread().getContextClassLoader().getResource("videos/" + userInput.substring(7) + ".mp4"));
+                } else if (userInput.equals("/images")) {
+                    System.out.println("clouds\ndog\nflowers\nparis\nUse /image <image name> to send image.");
+                } else if (userInput.equals("/videos")) {
+                    System.out.println("birds\nmolten-metal\nslowmo-dog\nwingsuit\nUse /video <video name> to send video.");
                 } else if (userInput.equals("/quit")) {
                     break;
                 } else {
@@ -105,6 +123,8 @@ public class UserNode {
                     System.out.println("*   <message>           : send new TextMessage        *");
                     System.out.println("*   /image <imagepath>  : send new ImageMessage       *");
                     System.out.println("*   /video <videopath>  : send new VideoMessage       *");
+                    System.out.println("*   /images             : lists available images      *");
+                    System.out.println("*   /videos             : lists available videos      *");
                     System.out.println("*   /help               : display this message        *");
                     System.out.println("*   /quit               : close application           *");
                     System.out.println("*******************************************************");
@@ -184,7 +204,7 @@ public class UserNode {
         }
 
         public void sendMessage(Message message) {
-            //TODO
+            //TODO: handle Text/Image/VideoMessage
             try {
                 objectOutputStream.writeObject(message);
             } catch (IOException e) {
