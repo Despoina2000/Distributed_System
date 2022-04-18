@@ -130,8 +130,7 @@ br.close();
     long bytes = videoFile.size();
     String name = videoFile.getName();
     int length = videoFile.length();
-    VideoMetadata video = new VideoMetadata(name, bytes);    
-    
+    VideoMetadata video = new VideoMetadata(name, bytes);
     //TODO
         return video;
     }
