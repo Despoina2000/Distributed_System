@@ -3,7 +3,9 @@ package Distributed_System_part1.Util;
 import java.io.File;
 import java.math.BigInteger;
 import java.util.ArrayList;
-
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import javax.imageio.ImageReade;
 /**
  * contains helper methods to be used all around
  */
@@ -15,8 +17,20 @@ public class Util {
      * @return Hash
      */
     public BigInteger hash(String s) {
+        
         //TODO
-        return null;
+        try {
+            // getInstance() method is called with algorithm SHA-1
+            MessageDigest md = MessageDigest.getInstance("SHA-1");
+  
+            // digest() method is called
+            // to calculate message digest of the input string
+            // returned as array of byte
+            byte[] messageDigest = md.digest(s.getBytes());
+  
+            // Convert byte array into signum representation
+            BigInteger hashInt = new BigInteger(1, messageDigest);
+        return hashInt;
     }
 
     /**
@@ -25,10 +39,32 @@ public class Util {
      * @param chunkSize megethos se byte, poso megalo tha einai kathe chunk
      * @return lista me ta byte[] chunks
      */
-    public ArrayList<byte[]> splitFileToChunks(File file, int chunkSize) {
-        //TODO
-        return null;
+    public ArrayList<byte[]> splitFileToChunks(File file, int chunkSize) throws    IOException {
+    List<byte[]> chunks_bytes = new ArrayList<byte[]>();
+    int sizeOfChunk = 1024 * 1024 * chunkSize;
+    String eof = System.lineSeparator();
+    try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+        String line = br.readLine();
+        while (line != null) {
+            try (OutputStream out = new BufferedOutputStream(new FileOutputStream(newFile))) {
+                int fileSize = 0;
+                while (line != null) {
+                    byte[] bytes = (line + eof).getBytes(Charset.defaultCharset());
+                    if (fileSize + bytes.length > sizeOfChunk)
+                        break;
+                    out.write(bytes);
+                    fileSize += bytes.length;
+                    line = br.readLine();
+                }
+                chunks_bytes.add(bytes);
+            }
+        }
+
+br.close();
     }
+    return chunks_bytes;
+    //TODO
+            }
 
     /**
      * epanasinthetei arxeio apo chunks byte[] (to antitheto tou apo panw)
@@ -36,8 +72,15 @@ public class Util {
      * @return file image or video file
      */
     public File mergeChunksToFile(ArrayList<byte[]> chunks) {
-        //TODO
-        return null;
+    File fileObj = new File("file.txt");
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileObj))) {
+        String name = file.getName();
+        String line = br.readLine();
+        for ( byte[] chunk: chunks) {
+            writer.append(chunk);
+    }//TODO
+    }
+        return fileObj;
     }
 
     //sta epomena mporoume na xrisimopoiisoume to metadata-extractor
@@ -49,8 +92,32 @@ public class Util {
      * @see ImageMetadata
      */
     public ImageMetadata extractImageMetadata(File imageFile) {
-        //TODO
-        return null;
+     int pos = imageFile.getName().lastIndexOf(".");
+  if (pos == -1)
+    throw new IOException("No extension for file: " + imageFile.getAbsolutePath());
+    String suffix = imageFile.getName().substring(pos + 1);
+  Iterator<ImageReader> iter = ImageIO.getImageReadersBySuffix(suffix);
+  while(iter.hasNext()) {
+    ImageReader reader = iter.next();
+    try {
+      ImageInputStream stream = new FileImageInputStream(imageFile);
+      reader.setInput(stream);
+      int width = reader.getWidth(reader.getMinIndex());
+      int height = reader.getHeight(reader.getMinIndex());
+      long bytes = imageFile.size();
+      String name = imageFile.getName();
+      ImageMetadata img = new ImageMetadata(name, bytes, width, height);
+      return img;
+    } catch (IOException e) {
+      log.warn("Error reading: " + imgFile.getAbsolutePath(), e);
+    } finally {
+      reader.dispose();
+    }
+
+
+  }
+    
+    //TODO
     }
 
     /**
@@ -60,7 +127,12 @@ public class Util {
      * @see VideoMetadata
      */
     public VideoMetadata extractVideoMetadata(File videoFile) {
-        //TODO
-        return null;
+    long bytes = videoFile.size();
+    String name = videoFile.getName();
+    int length = videoFile.length();
+    VideoMetadata video = new VideoMetadata(name, bytes);    
+    
+    //TODO
+        return video;
     }
 }

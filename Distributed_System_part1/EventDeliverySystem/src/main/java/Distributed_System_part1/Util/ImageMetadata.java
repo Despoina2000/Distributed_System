@@ -11,7 +11,7 @@ public class ImageMetadata implements Serializable {
     /**
      * file size in bytes
      */
-    private int fileSize;
+    private long fileSize;
     /**
      * width in pixels
      */
@@ -21,7 +21,7 @@ public class ImageMetadata implements Serializable {
      */
     private int height;
 
-    public ImageMetadata(String fileName, int fileSize, int width, int height) {
+    public ImageMetadata(String fileName, long  fileSize, int width, int height) {
         this.fileName = fileName;
         this.fileSize = fileSize;
         this.width = width;
@@ -32,7 +32,7 @@ public class ImageMetadata implements Serializable {
         return fileName;
     }
 
-    public int getFileSize() {
+    public long getFileSize() {
         return fileSize;
     }
 
