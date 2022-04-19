@@ -342,7 +342,7 @@ public class Broker implements Runnable {
          * @param fileSize
          * @return
          */
-        ArrayList<byte[]> getFileChunks(ObjectInputStream brokerPublisherInputStream, int fileSize) {
+        ArrayList<byte[]> getFileChunks(ObjectInputStream brokerPublisherInputStream, long fileSize) {
             ArrayList<byte[]> chunksList = new ArrayList<>();
             int chunkSize = 1024;
             for (int i = 0; i <= fileSize / chunkSize; i++) {
