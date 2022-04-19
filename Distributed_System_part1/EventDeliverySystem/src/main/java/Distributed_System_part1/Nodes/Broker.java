@@ -7,6 +7,7 @@ import Distributed_System_part1.Model.VideoMessage;
 import Distributed_System_part1.Util.Util;
 
 import java.io.*;
+import java.math.BigInteger;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
@@ -21,7 +22,7 @@ public class Broker implements Runnable {
     public static final int BROKER1 = 4000;
     public static final int BROKER2 = 5555;
     public static final int BROKER3 = 5984;
-
+    public static Util util;
     public final String url = "localhost";
     public int port;
     public ArrayList<ObjectOutputStream> otherBrokersOutputStreams;
@@ -96,6 +97,9 @@ public class Broker implements Runnable {
             e.printStackTrace();
         }
         System.out.println("Broker port set to: " + port);
+
+        //initialize util
+        util = new Util();
 
         //initialize hashmaps/arraylists
         otherBrokersOutputStreams = new ArrayList<>();
@@ -205,8 +209,18 @@ public class Broker implements Runnable {
      * @see Util#hash(String topic)
      */
     private int getResponsibleBrokerPort(String topic) {
-        //TODO
-        return BROKER2;
+        switch ((util.hash(topic).mod(BigInteger.valueOf(3))).intValue()) {
+            case 0 -> {
+                return BROKER1;
+            }
+            case 1 -> {
+                return BROKER2;
+            }
+            case 2 -> {
+                return BROKER3;
+            }
+        }
+        return 0; // something went wrong
     }
 
     /**
@@ -250,7 +264,7 @@ public class Broker implements Runnable {
 
         /**
          * handles tin epikoinwnia me ton Publisher
-         *
+         * <p>
          * arxika rotaei ton xristi gia to username tou kai to swzei sto this.username
          * meta mpenei sto while loop pou koitaei an to incoming message anoikei stin superclass Message.class
          * xeirizetai to message analoga me tin class tou (px ImageClass)
@@ -379,14 +393,14 @@ public class Broker implements Runnable {
 
         /**
          * handles tin epikoinwnia me ton Consumer
-         *
+         * <p>
          * arxika rotaei ton xristi gia to username tou kai to swzei sto this.username
          * meta mpainei sto while loop opou stelnei ta minimata tou currentTopic ston consumer
          * an o consumer steilei kapoio string koitame:
          * an to string einai "/getTopics" tou stelnoume ta topics me tin sendBrokerTopics()
          * an to string einai "/disconnect" kleinoume ta streams kai tin socket
          * alliws to string einai to kainourio topic pou thelei o consumer opote to thetoume ws current topic
-         *
+         * <p>
          * episis kathe 5 defterolepta stelnei ston consumer "there?" kai perimenei apantisi "yes"
          * afto to xrisimopoioume gia na kseroume oti o consumer sinexizei kai einai online kai den exei kanei disconnect
          * an den steilei apantisi "yes" kleinoume ta streams kai to socket
@@ -524,7 +538,7 @@ public class Broker implements Runnable {
 
         /**
          * handles tin epikoinwnia me tous allous Broker
-         *
+         * <p>
          * perimenei minima apo kapoion broker
          * to minima tha einai port+topic opote to vazei stin brokerPortsAndTopics
          */
