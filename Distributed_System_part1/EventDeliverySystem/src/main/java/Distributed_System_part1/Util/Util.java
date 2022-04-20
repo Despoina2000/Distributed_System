@@ -93,7 +93,7 @@ public class Util {
 //                String name = file.getName();
 //                String line = br.readLine();
                 for (byte[] chunk : chunks) {
-                    writer.append(chunk); // edw mou leei oti den mporei na kanei append byte[], isws prepei na vroume allo tropo
+        //                    writer.append(chunk); // edw mou leei oti den mporei na kanei append byte[], isws prepei na vroume allo tropo
                 }//TODO
             } catch (IOException e) {
                 e.printStackTrace();
@@ -131,7 +131,7 @@ public class Util {
                     ImageMetadata img = new ImageMetadata(name, bytes, width, height);
                     return img;
                 } catch (IOException e) {
-                    log.warn("Error reading: " + imageFile.getAbsolutePath(), e); //edw mou leei oti den kserei ti einai to log
+        //                    log.warn("Error reading: " + imageFile.getAbsolutePath(), e); //edw mou leei oti den kserei ti einai to log
                 } finally {
                     reader.dispose();
                 }
