@@ -12,6 +12,11 @@ import com.drew.metadata.Metadata;
 import com.drew.metadata.Directory;
 import com.drew.metadata.MetadataException;
 import com.drew.metadata.Tag;
+import com.drew.metadata.exif.ExifDirectoryBase;
+import com.drew.metadata.exif.ExifIFD0Directory;
+import com.drew.metadata.exif.ExifImageDirectory;
+import com.drew.metadata.exif.ExifSubIFDDirectory;
+import com.drew.metadata.jpeg.JpegDirectory;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,54 +36,31 @@ public class EventDeliverySystem {
                     Thread.currentThread().getContextClassLoader().getResource("videos/birds.mp4").getPath());
             try {
                 Metadata metadata = ImageMetadataReader.readMetadata(file);
-
-                print(metadata, "Using ImageMetadataReader");
-            } catch (ImageProcessingException e) {
-                print(e);
-            } catch (IOException e) {
-                print(e);
-            }
-        }
-    }
-
-    private static void print(Metadata metadata, String method) {
-        System.out.println();
-        System.out.println("-------------------------------------------------");
-        System.out.print(' ');
-        System.out.print(method);
-        System.out.println("-------------------------------------------------");
-        System.out.println();
-
-        //
-        // A Metadata object contains multiple Directory objects
-        //
-        for (Directory directory : metadata.getDirectories()) {
-            System.out.println("Directory:" + directory.toString());
-            //
-            // Each Directory stores values in Tag objects
-            //
-
-            for (Tag tag : directory.getTags()) {
-                System.out.println(tag.getTagType() + " - " + tag);
-            }
-            try {
-                System.out.println(directory.getInt(259));
-
-            } catch (MetadataException e) {
+                //
+                // A Metadata object contains multiple Directory objects
+                //
+                for (Directory directory : metadata.getDirectories()) {
+                    //
+                    // Each Directory stores values in Tag objects
+                    //
+                    for (Tag tag : directory.getTags()) {
+                        if (tag.getTagName().toLowerCase(Locale.ROOT).equals("file name"))
+                            System.out.println(tag.getDescription());
+                        if (tag.getTagName().toLowerCase(Locale.ROOT).equals("file size"))
+                            System.out.println(tag.getDescription().substring(0,tag.getDescription().length() - 6));
+                        if (tag.getTagName().toLowerCase(Locale.ROOT).contains("width") && !tag.getTagName().toLowerCase(Locale.ROOT).contains("thumbnail"))
+                            System.out.println(tag.getDescription().substring(0,tag.getDescription().length() - 7));
+                        if (tag.getTagName().toLowerCase(Locale.ROOT).contains("height") && !tag.getTagName().toLowerCase(Locale.ROOT).contains("thumbnail"))
+                            System.out.println(tag.getDescription().substring(0,tag.getDescription().length() - 7));
+                        if (tag.getTagName().toLowerCase(Locale.ROOT).equals("duration"))
+                            System.out.println(tag.getDescription());
+                        if (tag.getTagName().toLowerCase(Locale.ROOT).equals("frame rate"))
+                            System.out.println(tag.getDescription());
+                    }
+                }
+            } catch (ImageProcessingException | IOException e) {
                 e.printStackTrace();
             }
-
-            //
-            // Each Directory may also contain error messages
-            //
-            for (String error : directory.getErrors()) {
-                System.err.println("ERROR: " + error);
-            }
         }
     }
-
-    private static void print(Exception exception) {
-        System.err.println("EXCEPTION: " + exception);
-    }
-
 }
