@@ -10,3 +10,6 @@ build
 # Ignore vscode files
 .vscode
 bin
+
+# Ignore Visual Studio files
+.vs
