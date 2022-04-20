@@ -5,6 +5,7 @@ import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.logging;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Iterator;
@@ -101,7 +102,53 @@ public class Util {
             return fileObj;
         }
 
-        //sta epomena mporoume na xrisimopoiisoume to metadata-extractor
+    /**
+     * epanasinthetei arxeio apo chunks byte[] (to antitheto tou apo panw)
+     * @param chunks lista me ta byte[] chunks
+     * @return file image or video file
+     */
+    public File mergeChunksToFile(ArrayList<byte[]> chunks) {
+    File fileObj = new File("file.txt");
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileObj))) {
+        String name = file.getName();
+        String line = br.readLine();
+        for ( byte[] chunk: chunks) {
+            Files.write(fileObj.toPath(), chunk);
+    }//TODO
+    }
+        return fileObj;
+    }
+
+    //sta epomena mporoume na xrisimopoiisoume to metadata-extractor
+
+    /**
+     * vgazei ta metadata tou image pou tha stalnoun mazi me to ImageMessage
+     * @param imageFile eikona
+     * @return ImageMetadata object
+     * @see ImageMetadata
+     */
+    public ImageMetadata extractImageMetadata(File imageFile) {
+     int pos = imageFile.getName().lastIndexOf(".");
+  if (pos == -1)
+    throw new IOException("No extension for file: " + imageFile.getAbsolutePath());
+    String suffix = imageFile.getName().substring(pos + 1);
+  Iterator<ImageReader> iter = ImageIO.getImageReadersBySuffix(suffix);
+  while(iter.hasNext()) {
+    ImageReader reader = iter.next();
+    try {
+      ImageInputStream stream = new FileImageInputStream(imageFile);
+      reader.setInput(stream);
+      int width = reader.getWidth(reader.getMinIndex());
+      int height = reader.getHeight(reader.getMinIndex());
+      long bytes = imageFile.size();
+      String name = imageFile.getName();
+      ImageMetadata img = new ImageMetadata(name, bytes, width, height);
+      return img;
+    } catch (IOException e) {
+      log.warn("Error reading: " + imgFile.getAbsolutePath(), e);
+    } finally {
+      reader.dispose();
+    }
 
         /**
          * vgazei ta metadata tou image pou tha stalnoun mazi me to ImageMessage
