@@ -10,6 +10,7 @@ import com.drew.imaging.ImageMetadataReader;
 import com.drew.imaging.ImageProcessingException;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.Directory;
+import com.drew.metadata.MetadataException;
 import com.drew.metadata.Tag;
 
 import java.io.File;
@@ -26,24 +27,21 @@ public class EventDeliverySystem {
             Thread brokerThread = new Thread(new Broker());
             brokerThread.start();
         } else if (args[0].toLowerCase(Locale.ROOT).startsWith("test")) {
-        File file = new File("pathtofile"); 
-        try {
-            Metadata metadata = ImageMetadataReader.readMetadata(file);
+            File file = new File(
+                    Thread.currentThread().getContextClassLoader().getResource("videos/birds.mp4").getPath());
+            try {
+                Metadata metadata = ImageMetadataReader.readMetadata(file);
 
-            print(metadata, "Using ImageMetadataReader");
-        } catch (ImageProcessingException e) {
-            print(e);
-        } catch (IOException e) {
-            print(e);
-        }    
-        // code here
-            // System.out.println("doulevei");
-            // Util util = new Util();
-            // util.hash("topic");
+                print(metadata, "Using ImageMetadataReader");
+            } catch (ImageProcessingException e) {
+                print(e);
+            } catch (IOException e) {
+                print(e);
+            }
         }
     }
-    private static void print(Metadata metadata, String method)
-    {
+
+    private static void print(Metadata metadata, String method) {
         System.out.println();
         System.out.println("-------------------------------------------------");
         System.out.print(' ');
@@ -55,12 +53,19 @@ public class EventDeliverySystem {
         // A Metadata object contains multiple Directory objects
         //
         for (Directory directory : metadata.getDirectories()) {
-
+            System.out.println("Directory:" + directory.toString());
             //
             // Each Directory stores values in Tag objects
             //
+
             for (Tag tag : directory.getTags()) {
-                System.out.println(tag);
+                System.out.println(tag.getTagType() + " - " + tag);
+            }
+            try {
+                System.out.println(directory.getInt(259));
+
+            } catch (MetadataException e) {
+                e.printStackTrace();
             }
 
             //
@@ -72,10 +77,8 @@ public class EventDeliverySystem {
         }
     }
 
-    private static void print(Exception exception)
-    {
+    private static void print(Exception exception) {
         System.err.println("EXCEPTION: " + exception);
     }
-
 
 }
