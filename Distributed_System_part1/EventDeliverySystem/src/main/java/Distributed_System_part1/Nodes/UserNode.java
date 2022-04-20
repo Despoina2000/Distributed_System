@@ -69,7 +69,7 @@ public class UserNode {
                     File[] allContents = userDirectory.listFiles();
                     if (allContents != null) {
                         for (File file : allContents) {
-                            if (file.delete()) System.out.println("Deleted file:" + file.getName());;
+                            if (file.delete()) System.out.println("Deleted file:" + file.getName());
                         }
                     }
                 }
@@ -113,6 +113,8 @@ public class UserNode {
                 } else if (userInput.equals("/videos")) {
                     System.out.println("birds\nmolten-metal\nslowmo-dog\nwingsuit\nUse /video <video name> to send video.");
                 } else if (userInput.equals("/quit")) {
+                    publisher.disconnect();
+                    consumer.disconnect();
                     break;
                 } else {
                     System.out.println("*******************************************************");
@@ -152,6 +154,7 @@ public class UserNode {
         /**
          * kanei connect ston broker, kanei initialize ta object input/output streams
          * stelnei ston broker oti einai "publisher" kai meta stelnei to username tou
+         *
          * @param port
          */
         public void connectToBroker(int port) {
@@ -197,7 +200,6 @@ public class UserNode {
                     consumer.setTopic();
 
                 }
-
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
@@ -251,6 +253,7 @@ public class UserNode {
         /**
          * kanei connect ston broker, kanei initialize ta object input/output streams
          * stelnei ston broker oti einai "consumer" kai meta stelnei to username tou
+         *
          * @param port
          */
         public void connectToBroker(int port) {
