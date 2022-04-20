@@ -13,3 +13,4 @@ bin
 
 # Ignore Visual Studio files
 .vs
+/EventDeliverySystem/src/main/java/Distributed_System_part1/.vs/
