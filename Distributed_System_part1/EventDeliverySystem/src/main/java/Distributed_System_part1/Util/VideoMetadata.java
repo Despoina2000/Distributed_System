@@ -11,7 +11,7 @@ public class VideoMetadata implements Serializable {
     /**
      * file size in bytes
      */
-    private long fileSize;
+    private int fileSize;
     /**
      * frame width in pixels
      */
@@ -28,8 +28,9 @@ public class VideoMetadata implements Serializable {
      * frames per second
      */
     private int frameRate;
+    public VideoMetadata(){}
 
-    public VideoMetadata(String fileName, long fileSize, int frameWidth, int frameHeight, int length, int frameRate) {
+    public VideoMetadata(String fileName, int fileSize, int frameWidth, int frameHeight, int length, int frameRate) {
         this.fileName = fileName;
         this.fileSize = fileSize;
         this.frameWidth = frameWidth;
@@ -60,6 +61,29 @@ public class VideoMetadata implements Serializable {
 
     public int getFrameRate() {
         return frameRate;
+    }
+    public void setFileName(String name) {
+         fileName=name;
+    }
+
+    public void setFileSize( int size) {
+         fileSize= size;
+    }
+
+    public void setFrameWidth(int width) {
+         frameWidth=width;
+    }
+
+    public void setFrameHeight(int height) {
+         frameHeight=height;
+    }
+
+    public void setLength(int length) {
+        this.length=length;
+    }
+
+    public void setFrameRate( int rate) {
+         frameRate=rate;
     }
 
     @Override

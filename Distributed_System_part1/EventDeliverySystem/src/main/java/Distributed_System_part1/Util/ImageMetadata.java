@@ -20,7 +20,9 @@ public class ImageMetadata implements Serializable {
      * height in pixels
      */
     private int height;
+public ImageMetadata(){
 
+}
     public ImageMetadata(String fileName, long  fileSize, int width, int height) {
         this.fileName = fileName;
         this.fileSize = fileSize;
@@ -39,10 +41,25 @@ public class ImageMetadata implements Serializable {
     public int getWidth() {
         return width;
     }
-
     public int getHeight() {
         return height;
     }
+    public void setHeight(int height) {
+       this.height=height;
+    }
+    public void setFileName( String name) {
+         fileName=name;
+    }
+
+    public void setFileSize(int size) {
+         fileSize=size;
+    }
+
+    public void setWidth( int width) {
+        this.width= width;
+    }
+
+   
 
     @Override
     public String toString() {
