@@ -3,6 +3,7 @@ package Distributed_System_part1.Util;
 import java.io.File;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.logging;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import javax.imageio.ImageReade;
@@ -77,7 +78,7 @@ br.close();
         String name = file.getName();
         String line = br.readLine();
         for ( byte[] chunk: chunks) {
-            writer.append(chunk);
+            Files.write(fileObj.toPath(), chunk);
     }//TODO
     }
         return fileObj;
