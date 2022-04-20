@@ -6,6 +6,14 @@ package Distributed_System_part1;
 import Distributed_System_part1.Nodes.Broker;
 import Distributed_System_part1.Nodes.UserNode;
 import Distributed_System_part1.Util.Util;
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.imaging.ImageProcessingException;
+import com.drew.metadata.Metadata;
+import com.drew.metadata.Directory;
+import com.drew.metadata.Tag;
+
+import java.io.File;
+import java.io.IOException;
 
 import java.util.Locale;
 
@@ -18,10 +26,56 @@ public class EventDeliverySystem {
             Thread brokerThread = new Thread(new Broker());
             brokerThread.start();
         } else if (args[0].toLowerCase(Locale.ROOT).startsWith("test")) {
-            // code here
+        File file = new File("pathtofile"); 
+        try {
+            Metadata metadata = ImageMetadataReader.readMetadata(file);
+
+            print(metadata, "Using ImageMetadataReader");
+        } catch (ImageProcessingException e) {
+            print(e);
+        } catch (IOException e) {
+            print(e);
+        }    
+        // code here
             // System.out.println("doulevei");
             // Util util = new Util();
             // util.hash("topic");
         }
     }
+    private static void print(Metadata metadata, String method)
+    {
+        System.out.println();
+        System.out.println("-------------------------------------------------");
+        System.out.print(' ');
+        System.out.print(method);
+        System.out.println("-------------------------------------------------");
+        System.out.println();
+
+        //
+        // A Metadata object contains multiple Directory objects
+        //
+        for (Directory directory : metadata.getDirectories()) {
+
+            //
+            // Each Directory stores values in Tag objects
+            //
+            for (Tag tag : directory.getTags()) {
+                System.out.println(tag);
+            }
+
+            //
+            // Each Directory may also contain error messages
+            //
+            for (String error : directory.getErrors()) {
+                System.err.println("ERROR: " + error);
+            }
+        }
+    }
+
+    private static void print(Exception exception)
+    {
+        System.err.println("EXCEPTION: " + exception);
+    }
+
+
 }

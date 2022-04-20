@@ -27,7 +27,6 @@ public class Util {
      */
     public BigInteger hash(String s) {
 
-        //TODO
         try {
             // getInstance() method is called with algorithm SHA-1
             MessageDigest md = MessageDigest.getInstance("SHA-1");
@@ -83,25 +82,7 @@ public class Util {
             //TODO
         }
 
-        /**
-         * epanasinthetei arxeio apo chunks byte[] (to antitheto tou apo panw)
-         * @param chunks lista me ta byte[] chunks
-         * @return file image or video file
-         */
-        public File mergeChunksToFile (ArrayList < byte[]>chunks){
-            File fileObj = new File("file.txt");
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileObj))) {
-//                String name = file.getName();
-//                String line = br.readLine();
-                for (byte[] chunk : chunks) {
-        //                    writer.append(chunk); // edw mou leei oti den mporei na kanei append byte[], isws prepei na vroume allo tropo
-                }//TODO
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return fileObj;
-        }
-
+        
     /**
      * epanasinthetei arxeio apo chunks byte[] (to antitheto tou apo panw)
      * @param chunks lista me ta byte[] chunks
@@ -127,7 +108,7 @@ public class Util {
      * @return ImageMetadata object
      * @see ImageMetadata
      */
-    public ImageMetadata extractImageMetadata(File imageFile) {
+   /* public ImageMetadata extractImageMetadata(File imageFile) {
      int pos = imageFile.getName().lastIndexOf(".");
   if (pos == -1)
     throw new IOException("No extension for file: " + imageFile.getAbsolutePath());
@@ -145,48 +126,13 @@ public class Util {
       ImageMetadata img = new ImageMetadata(name, bytes, width, height);
       return img;
     } catch (IOException e) {
-      log.warn("Error reading: " + imgFile.getAbsolutePath(), e);
+      System.out.println("Error reading: " + imgFile.getAbsolutePath());
+      e.printStackTrace();
     } finally {
       reader.dispose();
-    }
+    }}*/
 
-        /**
-         * vgazei ta metadata tou image pou tha stalnoun mazi me to ImageMessage
-         * @param imageFile eikona
-         * @return ImageMetadata object
-         * @see ImageMetadata
-         */
-        public ImageMetadata extractImageMetadata (File imageFile){
-            int pos = imageFile.getName().lastIndexOf(".");
-            if (pos == -1)
-                try {
-                    throw new IOException("No extension for file: " + imageFile.getAbsolutePath());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            String suffix = imageFile.getName().substring(pos + 1);
-            Iterator<ImageReader> iter = ImageIO.getImageReadersBySuffix(suffix);
-            while (iter.hasNext()) {
-                ImageReader reader = iter.next();
-                try {
-                    ImageInputStream stream = new FileImageInputStream(imageFile);
-                    reader.setInput(stream);
-                    int width = reader.getWidth(reader.getMinIndex());
-                    int height = reader.getHeight(reader.getMinIndex());
-                    long bytes = Files.size(imageFile.toPath());
-                    String name = imageFile.getName();
-                    ImageMetadata img = new ImageMetadata(name, bytes, width, height);
-                    return img;
-                } catch (IOException e) {
-        //                    log.warn("Error reading: " + imageFile.getAbsolutePath(), e); //edw mou leei oti den kserei ti einai to log
-                } finally {
-                    reader.dispose();
-                }
-            }
-
-            //TODO
-            return null;
-        }
+        
 
         /**
          * vgazei ta metadata tou video pou tha staloun mazi me to VideoMessage

@@ -2,8 +2,9 @@
   "ExpandedNodes": [
     "",
     "\\Model",
+    "\\Nodes",
     "\\Util"
   ],
-  "SelectedNode": "\\Util\\VideoMetadata.java",
+  "SelectedNode": "\\Util\\Util.java",
   "PreviewInSolutionExplorer": false
 }
