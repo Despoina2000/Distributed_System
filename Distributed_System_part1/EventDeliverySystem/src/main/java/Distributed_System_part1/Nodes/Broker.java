@@ -298,12 +298,12 @@ public class Broker implements Runnable {
                                 topicsMessages.get(currentTopic).add(new ImageMessage(((ImageMessage) incomingMessage).getUsername(),
                                         ((ImageMessage) incomingMessage).getTopic(),
                                         ((ImageMessage) incomingMessage).getMetadata(),
-                                        getFileChunks(brokerPublisherInputStream, ((ImageMessage) incomingMessage).getMetadata().getFileSize())));
+                                        receiveFileChunks(brokerPublisherInputStream, ((ImageMessage) incomingMessage).getMetadata().getFileSize())));
                             } else if (incomingMessage.getClass() == VideoMessage.class) {
                                 topicsMessages.get(currentTopic).add(new VideoMessage(((VideoMessage) incomingMessage).getUsername(),
                                         ((VideoMessage) incomingMessage).getTopic(),
                                         ((VideoMessage) incomingMessage).getMetadata(),
-                                        getFileChunks(brokerPublisherInputStream, ((VideoMessage) incomingMessage).getMetadata().getFileSize())));
+                                        receiveFileChunks(brokerPublisherInputStream, ((VideoMessage) incomingMessage).getMetadata().getFileSize())));
                             }
                             synchronized (topicsMessages.get(currentTopic)) {
                                 topicsMessages.get(currentTopic).notifyAll(); //kaloume tin topicsMessages.get(topic).notifyAll(); gia na staloun oles oi allages stous consumers
@@ -349,10 +349,10 @@ public class Broker implements Runnable {
          * @param fileSize
          * @return
          */
-        ArrayList<byte[]> getFileChunks(ObjectInputStream brokerPublisherInputStream, long fileSize) {
+        ArrayList<byte[]> receiveFileChunks(ObjectInputStream brokerPublisherInputStream, long fileSize) {
             ArrayList<byte[]> chunksList = new ArrayList<>();
-            int chunkSize = 1024; //TODO fix chunksize allover the project
-            for (int i = 0; i <= fileSize / chunkSize; i++) {
+            int chunkSize = 1024 * 1024; //TODO fix chunksize allover the project
+            for (int i = 0; i < Math.ceilDiv(fileSize,chunkSize); i++) {
                 try {
                     chunksList.add((byte[]) brokerPublisherInputStream.readObject());
                 } catch (IOException | ClassNotFoundException e) {
