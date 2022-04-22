@@ -4,6 +4,7 @@ import Distributed_System_part1.Model.ImageMessage;
 import Distributed_System_part1.Model.Message;
 import Distributed_System_part1.Model.TextMessage;
 import Distributed_System_part1.Model.VideoMessage;
+import Distributed_System_part1.Util.Util;
 
 import java.io.*;
 import java.net.Socket;
@@ -21,6 +22,7 @@ public class UserNode {
     public static final int BROKER2 = 5555;
     public static final int BROKER3 = 5984;
     public final String url = "localhost";
+    public Util util;
 
     public volatile String username;
     public volatile int currentBrokerPort;
@@ -53,6 +55,7 @@ public class UserNode {
             case 1 -> this.currentBrokerPort = BROKER2;
             case 2 -> this.currentBrokerPort = BROKER3;
         }
+        util = new Util();
         publisher = new Publisher();
         consumer = new Consumer(this);
         consumer.start();
@@ -85,8 +88,6 @@ public class UserNode {
      * arxizei to command line interface gia na dwsoume entoles (px /topic , message klp)
      */
     private void startCLI() {
-
-
         System.out.println("Command line interface started:");
         String userInput = " ";
         while (!userInput.equals("/quit")) {
@@ -98,16 +99,51 @@ public class UserNode {
             if (userInput.startsWith("/")) {
                 if (userInput.startsWith("/topic ")) {
                     this.currentTopic = userInput.substring(7);
+                    if (!topicsMessages.containsKey(currentTopic)) topicsMessages.put(currentTopic, new ArrayList<>());
                     publisher.setTopic();
                     consumer.setTopic();
                 } else if (userInput.equals("/topics")) {
                     consumer.requestTopics();
                 } else if (userInput.startsWith("/image ")) {
                     // send ImageMessage
-                    System.out.println(Thread.currentThread().getContextClassLoader().getResource("images/" + userInput.substring(7) + ".jpg"));
+                    try {
+                        File image;
+                        if ((userInput).substring(7).contains("/") || (userInput).substring(7).contains("\\") || (userInput).substring(7).contains(".")) {
+                            image = new File((userInput).substring(7));
+                        } else {
+                            InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("images/" + userInput.substring(7) + ".jpg");
+                            image = new File(userInput.substring(7) + ".jpg");
+                            OutputStream os = new FileOutputStream(image);
+                            is.transferTo(os);
+                        }
+                        publisher.sendMessage(new ImageMessage(username, currentTopic, util.extractImageMetadata(image), image));
+                        System.gc();
+                        image.delete();
+                    } catch (NullPointerException e) {
+                        System.out.println("File does not exist/Incorrect file path");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 } else if (userInput.startsWith("/video ")) {
                     // send VideoMessage
-                    System.out.println(Thread.currentThread().getContextClassLoader().getResource("videos/" + userInput.substring(7) + ".mp4"));
+                    try {
+                        File video;
+                        if ((userInput).substring(7).contains("/") || (userInput).substring(7).contains("\\") || (userInput).substring(7).contains(".")) {
+                            video = new File((userInput).substring(7));
+                        } else {
+                            InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("videos/" + userInput.substring(7) + ".mp4");
+                            video = new File(userInput.substring(7) + ".mp4");
+                            OutputStream os = new FileOutputStream(video);
+                            is.transferTo(os);
+                        }
+                        publisher.sendMessage(new VideoMessage(username, currentTopic, util.extractVideoMetadata(video), video));
+                        System.gc();
+                        video.delete();
+                    } catch (NullPointerException e) {
+                        System.out.println("File does not exist/Incorrect file path");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 } else if (userInput.equals("/images")) {
                     System.out.println("clouds\ndog\nflowers\nparis\nUse /image <image name> to send image.");
                 } else if (userInput.equals("/videos")) {
@@ -164,8 +200,7 @@ public class UserNode {
                 objectOutputStream.writeObject("publisher");
                 objectOutputStream.flush();
                 objectInputStream = new ObjectInputStream(socket.getInputStream());
-                if (objectInputStream.readObject().equals("username?"))
-                    objectOutputStream.writeObject(username);
+                if (objectInputStream.readObject().equals("username?")) objectOutputStream.writeObject(username);
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
@@ -179,7 +214,6 @@ public class UserNode {
          */
         public void setTopic() {
 
-            //TODO: check an exoume idi tin pliroforia sto brokerPortsAndTopics allios:
             try {
                 //send to broker currentTopic
                 objectOutputStream.writeObject(currentTopic);
@@ -187,7 +221,7 @@ public class UserNode {
                 Object brokerAnswer = objectInputStream.readObject();
                 //perimenoume na mas pei o broker na sinexisoume
                 if (brokerAnswer.equals("continue")) {
-                    System.out.println("broker sent continue");
+//                    System.out.println("broker sent continue");
                 } else {
                     // an i apantisi einai broker port thetoume currentBrokerPort = port
                     // kai kanoume connectToBroker(port), consumer.connectToBroker(port) kai ksana setTopic kai consumer.setTopic
@@ -198,7 +232,6 @@ public class UserNode {
                     consumer.disconnect();
                     consumer.connectToBroker(currentBrokerPort);
                     consumer.setTopic();
-
                 }
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
@@ -206,16 +239,28 @@ public class UserNode {
         }
 
         public void sendMessage(Message message) {
-            //TODO: handle Text/Image/VideoMessage
             try {
-                objectOutputStream.writeObject(message);
+                if (message instanceof TextMessage) objectOutputStream.writeObject(message);
+                else if (message instanceof ImageMessage) {
+                    objectOutputStream.writeObject(new ImageMessage(username, currentTopic, ((ImageMessage) message).getMetadata()));
+                    sendFileChunks(util.splitFileToChunks(((ImageMessage) message).getContent(), 1));
+                } else if (message instanceof VideoMessage) {
+                    objectOutputStream.writeObject(new VideoMessage(username, currentTopic, ((VideoMessage) message).getMetadata()));
+                    sendFileChunks(util.splitFileToChunks(((VideoMessage) message).getContent(), 1));
+                } else objectOutputStream.writeObject(message);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
 
         public void sendFileChunks(ArrayList<byte[]> fileChunks) {
-            //TODO
+            try {
+                for (byte[] chunk : fileChunks) {
+                    objectOutputStream.writeObject(chunk);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         /**
@@ -291,24 +336,35 @@ public class UserNode {
          * px. incomingMessage.getClass().equals(ImageMessage.class) kanei process image message
          */
         private void processIncomingMessages() {
-            //TODO
-            //if message.getContentType=="text"/"image"/"video/ do this..
-            // an to mesage einai imagemessage i videomessage arxizoume na diavazoume byte[] se mia arraylist
-            // kai to sinthetoume meta me mergeChunksToFile se new ImageMessage/VideoMessage me ton overloaded constructor pou periexei kai to content
-
-            // prosthiki tou message sto topicsMessages (sto message.getTopic)
             Object incomingMessage;
             while (true) {
                 try {
                     if (socket.getInputStream().available() > 0 && !socket.isClosed()) {
                         incomingMessage = objectInputStream.readObject();
                         if (TextMessage.class.equals(incomingMessage.getClass())) {
-                            System.out.println(incomingMessage);
-                            //TODO: add message to topicsMessages list
+                            topicsMessages.get(currentTopic).add((TextMessage) incomingMessage); // add message to topicsMessages list
+                            System.out.println(((TextMessage) incomingMessage).getUsername() +
+                                    ": " + ((TextMessage) incomingMessage).getContent());
                         } else if (ImageMessage.class.equals(incomingMessage.getClass())) {
-                            //TODO: handle ImageMessage
+                            ImageMessage tempImageMessage = new ImageMessage(
+                                    ((ImageMessage) incomingMessage).getUsername(),
+                                    ((ImageMessage) incomingMessage).getTopic(),
+                                    ((ImageMessage) incomingMessage).getMetadata(),
+                                    recieveFileChunks(((ImageMessage) incomingMessage).getMetadata().getFileSize(),
+                                            ((ImageMessage) incomingMessage).getMetadata().getFileName()));
+                            topicsMessages.get(currentTopic).add(tempImageMessage);
+                            System.out.println(((ImageMessage) incomingMessage).getUsername() +
+                                    " sent image " + ((ImageMessage) incomingMessage).getMetadata().getFileName());
                         } else if (VideoMessage.class.equals(incomingMessage.getClass())) {
-                            //TODO: handle VideoMessage
+                            VideoMessage tempVideoMessage = new VideoMessage(
+                                    ((VideoMessage) incomingMessage).getUsername(),
+                                    ((VideoMessage) incomingMessage).getTopic(),
+                                    ((VideoMessage) incomingMessage).getMetadata(),
+                                    recieveFileChunks(((VideoMessage) incomingMessage).getMetadata().getFileSize(),
+                                            ((VideoMessage) incomingMessage).getMetadata().getFileName()));
+                            topicsMessages.get(currentTopic).add(tempVideoMessage);
+                            System.out.println(((VideoMessage) incomingMessage).getUsername() +
+                                    " sent video " + ((VideoMessage) incomingMessage).getMetadata().getFileName());
                         } else if (brokerPortsAndTopics.getClass().equals(incomingMessage.getClass())) {
                             //receive lista brokerPortsAndTopics - update tin topikh brokerPortsAndTopics
                             brokerPortsAndTopics.putAll((Map<? extends Integer, ? extends ArrayList<String>>) incomingMessage);
@@ -342,6 +398,23 @@ public class UserNode {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+
+        /**
+         * pernei ta file chunks ena ena kai ta sinthetei se ena file xrisimopoiwntas tin util
+         */
+        public File recieveFileChunks(long fileSize, String fileName) {
+            ArrayList<byte[]> chunksList = new ArrayList<>();
+            int chunkSize = 1024; //TODO fix chunksize allover the project
+            for (int i = 0; i <= fileSize / chunkSize; i++) {
+                try {
+                    chunksList.add((byte[]) objectInputStream.readObject());
+                } catch (IOException | ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+            File incomingFile = new File(username + "/" + fileName);
+            return util.mergeChunksToFile(chunksList, incomingFile);
         }
 
         /**
