@@ -350,7 +350,7 @@ public class UserNode {
                                     ((ImageMessage) incomingMessage).getUsername(),
                                     ((ImageMessage) incomingMessage).getTopic(),
                                     ((ImageMessage) incomingMessage).getMetadata(),
-                                    recieveFileChunks(((ImageMessage) incomingMessage).getMetadata().getFileSize(),
+                                    receiveFileChunks(((ImageMessage) incomingMessage).getMetadata().getFileSize(),
                                             ((ImageMessage) incomingMessage).getMetadata().getFileName()));
                             topicsMessages.get(currentTopic).add(tempImageMessage);
                             System.out.println(((ImageMessage) incomingMessage).getUsername() +
@@ -360,7 +360,7 @@ public class UserNode {
                                     ((VideoMessage) incomingMessage).getUsername(),
                                     ((VideoMessage) incomingMessage).getTopic(),
                                     ((VideoMessage) incomingMessage).getMetadata(),
-                                    recieveFileChunks(((VideoMessage) incomingMessage).getMetadata().getFileSize(),
+                                    receiveFileChunks(((VideoMessage) incomingMessage).getMetadata().getFileSize(),
                                             ((VideoMessage) incomingMessage).getMetadata().getFileName()));
                             topicsMessages.get(currentTopic).add(tempVideoMessage);
                             System.out.println(((VideoMessage) incomingMessage).getUsername() +
@@ -403,7 +403,7 @@ public class UserNode {
         /**
          * pernei ta file chunks ena ena kai ta sinthetei se ena file xrisimopoiwntas tin util
          */
-        public File recieveFileChunks(long fileSize, String fileName) {
+        public File receiveFileChunks(long fileSize, String fileName) {
             ArrayList<byte[]> chunksList = new ArrayList<>();
             int chunkSize = 1024; //TODO fix chunksize allover the project
             for (int i = 0; i <= fileSize / chunkSize; i++) {
