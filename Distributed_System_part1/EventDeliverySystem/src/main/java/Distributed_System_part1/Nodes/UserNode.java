@@ -421,7 +421,7 @@ public class UserNode {
          */
         public void disconnect() {
             try {
-                objectOutputStream.writeObject("/disconnect");
+//                objectOutputStream.writeObject("/disconnect");
                 objectOutputStream.close();
                 objectInputStream.close();
                 socket.close();
