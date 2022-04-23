@@ -7,21 +7,15 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Iterator;
 
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.imaging.ImageProcessingException;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.Directory;
-import com.drew.metadata.MetadataException;
 import com.drew.metadata.Tag;
-import com.drew.metadata.exif.ExifDirectoryBase;
-import com.drew.metadata.exif.ExifIFD0Directory;
-import com.drew.metadata.exif.ExifImageDirectory;
-import com.drew.metadata.exif.ExifSubIFDDirectory;
-import com.drew.metadata.exif.makernotes.CanonMakernoteDescriptor;
-import com.drew.metadata.jpeg.JpegDirectory;
 
+
+import java.util.Arrays;
 import java.util.Locale;
 
 /**
@@ -29,6 +23,7 @@ import java.util.Locale;
  */
 public class Util {
 
+    public final int chunkSize = 256 * 1024;
     /**
      * Epistrefei MD5(or SHA-1) hash apo string (px gia na vgaloume to hash tou broker "ip:port" h to hash tou "topic") (mporoume na tin valoume se helper class px utils.java)
      *
@@ -59,32 +54,28 @@ public class Util {
      * xwrizei to arxeio se mia lista bytes[](to megethos twn byte[] pernaei san parametros)
      *
      * @param file      image or video file
-     * @param chunkSize megethos se byte, poso megalo tha einai kathe chunk
      * @return lista me ta byte[] chunks
      */
-    public ArrayList<byte[]> splitFileToChunks(File file, int chunkSize) {
+    public ArrayList<byte[]> splitFileToChunks(File file) {
         ArrayList<byte[]> chunks_bytes = new ArrayList<byte[]>();
-        int sizeOfChunk = 1024 * 1024 * chunkSize;
-        String eof = System.lineSeparator();
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            String line = br.readLine();
-            while (line != null) {
-                int fileSize = 0;
-                while (line != null) {
-                    byte[] bytes = (line + eof).getBytes(Charset.defaultCharset());
-                    if (fileSize + bytes.length > sizeOfChunk) break;
-                    fileSize += bytes.length;
-                    line = br.readLine();
-                    chunks_bytes.add(bytes);
-                }
+        try {
+            byte[] fileChunk = Files.readAllBytes(file.toPath());
+            int start = 0;
+            //copy all but last byte[]
+            for (int i = 0; i < Files.size(file.toPath()) / chunkSize; i++) {
+                byte[] tempByte = Arrays.copyOfRange(fileChunk,start,start + chunkSize);
+                chunks_bytes.add(tempByte);
+                start+=chunkSize;
             }
-
-            br.close();
+            //copy the last byte[]
+            if (Files.size(file.toPath()) % chunkSize > 0) {
+                byte [] lastByte = Arrays.copyOfRange(fileChunk,start, (int) (start + (Files.size(file.toPath()) % chunkSize)));
+                chunks_bytes.add(lastByte);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
         return chunks_bytes;
-        //TODO
     }
 
 

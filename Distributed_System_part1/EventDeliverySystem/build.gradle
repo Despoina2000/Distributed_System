@@ -41,6 +41,10 @@ jar {
     manifest {
         attributes 'Main-Class': 'Distributed_System_part1.EventDeliverySystem'
     }
+    // Will include every single one of your dependencies, project or not
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
 
 task runBroker(type: JavaExec) {
