@@ -406,7 +406,7 @@ public class UserNode {
          */
         public File receiveFileChunks(long fileSize, String fileName) {
             ArrayList<byte[]> chunksList = new ArrayList<>();
-            for (int i = 0; i < Math.ceilDiv(fileSize,util.chunkSize); i++) {
+            for (int i = 0; i <= fileSize / util.chunkSize; i++) {
                 try {
                     chunksList.add((byte[]) objectInputStream.readObject());
                 } catch (IOException | ClassNotFoundException e) {
