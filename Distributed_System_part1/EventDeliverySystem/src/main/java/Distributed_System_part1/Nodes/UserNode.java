@@ -243,10 +243,10 @@ public class UserNode {
                 if (message instanceof TextMessage) objectOutputStream.writeObject(message);
                 else if (message instanceof ImageMessage) {
                     objectOutputStream.writeObject(new ImageMessage(username, currentTopic, ((ImageMessage) message).getMetadata()));
-                    sendFileChunks(util.splitFileToChunks(((ImageMessage) message).getContent(), 1));
+                    sendFileChunks(util.splitFileToChunks(((ImageMessage) message).getContent()));
                 } else if (message instanceof VideoMessage) {
                     objectOutputStream.writeObject(new VideoMessage(username, currentTopic, ((VideoMessage) message).getMetadata()));
-                    sendFileChunks(util.splitFileToChunks(((VideoMessage) message).getContent(), 1));
+                    sendFileChunks(util.splitFileToChunks(((VideoMessage) message).getContent()));
                 } else objectOutputStream.writeObject(message);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -405,8 +405,7 @@ public class UserNode {
          */
         public File receiveFileChunks(long fileSize, String fileName) {
             ArrayList<byte[]> chunksList = new ArrayList<>();
-            int chunkSize = 1024 * 1024; //TODO fix chunksize allover the project
-            for (int i = 0; i < Math.ceilDiv(fileSize,chunkSize); i++) {
+            for (int i = 0; i < Math.ceilDiv(fileSize,util.chunkSize); i++) {
                 try {
                     chunksList.add((byte[]) objectInputStream.readObject());
                 } catch (IOException | ClassNotFoundException e) {
