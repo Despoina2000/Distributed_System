@@ -222,6 +222,7 @@ public class UserNode {
                 //perimenoume na mas pei o broker na sinexisoume
                 if (brokerAnswer.equals("continue")) {
 //                    System.out.println("broker sent continue");
+                    System.out.println("Current topic: " + currentTopic);
                 } else {
                     // an i apantisi einai broker port thetoume currentBrokerPort = port
                     // kai kanoume connectToBroker(port), consumer.connectToBroker(port) kai ksana setTopic kai consumer.setTopic
