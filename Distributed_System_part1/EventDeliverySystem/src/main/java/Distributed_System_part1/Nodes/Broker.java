@@ -351,7 +351,7 @@ public class Broker implements Runnable {
          */
         ArrayList<byte[]> receiveFileChunks(ObjectInputStream brokerPublisherInputStream, long fileSize) {
             ArrayList<byte[]> chunksList = new ArrayList<>();
-            for (int i = 0; i < Math.ceilDiv(fileSize,util.chunkSize); i++) {
+            for (int i = 0; i <= fileSize / util.chunkSize; i++) {
                 try {
                     chunksList.add((byte[]) brokerPublisherInputStream.readObject());
                 } catch (IOException | ClassNotFoundException e) {
