@@ -181,7 +181,7 @@ public class Broker implements Runnable {
 //            System.out.println("first line received: " + firstLine);
             switch (firstLine) {
                 case "broker" -> {  //an to prwto minima einai broker swzoume to outputstream tou stin lista otherBrokersOutputStreams
-                    System.out.println("Broker connected, saving stream to list otherBrokersOutputStreams.");
+//                    System.out.println("Broker connected, saving stream to list otherBrokersOutputStreams.");
                     otherBrokersOutputStreams.add(newConnectionOutput);
                     for (ObjectOutputStream oos : otherBrokersOutputStreams) oos.flush();
                     new Thread(new BrokerBrokerConnection(newConnection, this, newConnectionInput)).start(); // kanourio BrokerBrokerConnection
@@ -254,7 +254,7 @@ public class Broker implements Runnable {
         private ObjectInputStream brokerPublisherInputStream;
 
         public BrokerPublisherConnection(Socket socket, Broker parent, ObjectOutputStream brokerPublisherOutputStream, ObjectInputStream brokerPublisherInputStream) {
-            System.out.println("Started new BrokerPublisherConnectionThread");
+//            System.out.println("Started new BrokerPublisherConnectionThread");
             this.socket = socket;
             this.parent = parent;
             this.brokerPublisherInputStream = brokerPublisherInputStream;
@@ -280,7 +280,7 @@ public class Broker implements Runnable {
                 brokerPublisherOutputStream.writeObject("username?");
                 //o publisher stelnei to username tou
                 this.username = (String) brokerPublisherInputStream.readObject();
-//                System.out.println("publisher username: " + username);
+                System.out.println("Publisher with username: " + username + "connected.");
                 //an einai prwti fora pou vlepoume to username kanoume initialize tin usernamesTopicsIndex
                 if (!usernamesTopicsIndex.containsKey(username))
                     usernamesTopicsIndex.put(username, new HashMap<String, Integer>());
@@ -308,8 +308,9 @@ public class Broker implements Runnable {
                             synchronized (topicsMessages.get(currentTopic)) {
                                 topicsMessages.get(currentTopic).notifyAll(); //kaloume tin topicsMessages.get(topic).notifyAll(); gia na staloun oles oi allages stous consumers
                             }
-                            System.out.print("topicsMessages: ");
-                            System.out.println(topicsMessages);
+                            //Print out broker messages
+//                            System.out.print("topicsMessages: ");
+//                            System.out.println(topicsMessages);
                         }
                         if (incomingMessage.equals("/disconnect")) {
                             throw new SocketException();
@@ -400,12 +401,12 @@ public class Broker implements Runnable {
         @Override
         public void run() {
             try {
-                System.out.println("Started new brokerConsumerConnectionThread");
+//                System.out.println("Started new brokerConsumerConnectionThread");
                 //stelnoume "username?" gia na dwsei o consumer to username tou
                 brokerConsumerOutputStream.writeObject("username?");
                 //o consumer stelnei to username tou
                 this.username = (String) brokerConsumerInputStream.readObject();
-//                System.out.println("consumer username: " + username);
+                if (username != null) System.out.println("Consumer with username: " + username + "connected.");
                 //an einai prwti fora pou vlepoume to username kanoume initialize tin usernamesTopicsIndex
                 if (!usernamesTopicsIndex.containsKey(username))
                     usernamesTopicsIndex.put(username, new HashMap<String, Integer>());
@@ -458,6 +459,13 @@ public class Broker implements Runnable {
                         System.out.println("Consumer with username:" + username + " disconnected.");
                     }
                 }
+            } catch (SocketException | EOFException e) {
+                try {
+                    socket.close();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+                if (username != null) System.out.println("Consumer with username:" + username + " disconnected.");
             } catch (IOException | ClassNotFoundException | InterruptedException e) {
                 e.printStackTrace();
             }
