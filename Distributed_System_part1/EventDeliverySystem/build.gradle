@@ -79,10 +79,3 @@ task runuse(type: JavaExec) {
     standardInput = System.in
     args 'usernode'
 }
-
-task runtest(type: JavaExec) {
-    classpath = sourceSets.main.runtimeClasspath
-    mainClass = 'Distributed_System_part1.EventDeliverySystem'
-    standardInput = System.in
-    args 'test'
-}

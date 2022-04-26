@@ -2,7 +2,6 @@ package Distributed_System_part1.Util;
 
 import java.io.*;
 import java.math.BigInteger;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.security.MessageDigest;
@@ -24,6 +23,7 @@ import java.util.Locale;
 public class Util {
 
     public final int chunkSize = 256 * 1024;
+
     /**
      * Epistrefei MD5(or SHA-1) hash apo string (px gia na vgaloume to hash tou broker "ip:port" h to hash tou "topic") (mporoume na tin valoume se helper class px utils.java)
      *
@@ -53,7 +53,7 @@ public class Util {
     /**
      * xwrizei to arxeio se mia lista bytes[](to megethos twn byte[] pernaei san parametros)
      *
-     * @param file      image or video file
+     * @param file image or video file
      * @return lista me ta byte[] chunks
      */
     public ArrayList<byte[]> splitFileToChunks(File file) {
@@ -63,13 +63,13 @@ public class Util {
             int start = 0;
             //copy all but last byte[]
             for (int i = 0; i < Files.size(file.toPath()) / chunkSize; i++) {
-                byte[] tempByte = Arrays.copyOfRange(fileChunk,start,start + chunkSize);
+                byte[] tempByte = Arrays.copyOfRange(fileChunk, start, start + chunkSize);
                 chunks_bytes.add(tempByte);
-                start+=chunkSize;
+                start += chunkSize;
             }
             //copy the last byte[]
             if (Files.size(file.toPath()) % chunkSize > 0) {
-                byte [] lastByte = Arrays.copyOfRange(fileChunk,start, (int) (start + (Files.size(file.toPath()) % chunkSize)));
+                byte[] lastByte = Arrays.copyOfRange(fileChunk, start, (int) (start + (Files.size(file.toPath()) % chunkSize)));
                 chunks_bytes.add(lastByte);
             }
         } catch (IOException e) {

@@ -89,6 +89,7 @@ public class UserNode {
      */
     private void startCLI() {
         System.out.println("Command line interface started:");
+        printHelp();
         String userInput = " ";
         while (!userInput.equals("/quit")) {
             try {
@@ -153,19 +154,7 @@ public class UserNode {
                     consumer.disconnect();
                     break;
                 } else {
-                    System.out.println("*******************************************************");
-                    System.out.println("*   USAGE:                                            *");
-                    System.out.println("*******************************************************");
-                    System.out.println("*   /topic <topic>      : set current topic           *");
-                    System.out.println("*   /topics             : request available topics    *");
-                    System.out.println("*   <message>           : send new TextMessage        *");
-                    System.out.println("*   /image <imagepath>  : send new ImageMessage       *");
-                    System.out.println("*   /video <videopath>  : send new VideoMessage       *");
-                    System.out.println("*   /images             : lists available images      *");
-                    System.out.println("*   /videos             : lists available videos      *");
-                    System.out.println("*   /help               : display this message        *");
-                    System.out.println("*   /quit               : close application           *");
-                    System.out.println("*******************************************************");
+                    printHelp();
                 }
             } else {
                 if (currentTopic == null) {
@@ -175,6 +164,22 @@ public class UserNode {
                 }
             }
         }
+    }
+
+    private void printHelp() {
+        System.out.println("*******************************************************");
+        System.out.println("*   USAGE:                                            *");
+        System.out.println("*******************************************************");
+        System.out.println("*   /topic <topic>      : set current topic           *");
+        System.out.println("*   /topics             : request available topics    *");
+        System.out.println("*   <message>           : send new TextMessage        *");
+        System.out.println("*   /image <imagepath>  : send new ImageMessage       *");
+        System.out.println("*   /video <videopath>  : send new VideoMessage       *");
+        System.out.println("*   /images             : lists available images      *");
+        System.out.println("*   /videos             : lists available videos      *");
+        System.out.println("*   /help               : display this message        *");
+        System.out.println("*   /quit               : close application           *");
+        System.out.println("*******************************************************");
     }
 
 
