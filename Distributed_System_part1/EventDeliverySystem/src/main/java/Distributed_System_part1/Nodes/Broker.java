@@ -280,7 +280,7 @@ public class Broker implements Runnable {
                 brokerPublisherOutputStream.writeObject("username?");
                 //o publisher stelnei to username tou
                 this.username = (String) brokerPublisherInputStream.readObject();
-                System.out.println("Publisher with username: " + username + "connected.");
+                System.out.println("Publisher with username: " + username + " connected.");
                 //an einai prwti fora pou vlepoume to username kanoume initialize tin usernamesTopicsIndex
                 if (!usernamesTopicsIndex.containsKey(username))
                     usernamesTopicsIndex.put(username, new HashMap<String, Integer>());
@@ -406,7 +406,7 @@ public class Broker implements Runnable {
                 brokerConsumerOutputStream.writeObject("username?");
                 //o consumer stelnei to username tou
                 this.username = (String) brokerConsumerInputStream.readObject();
-                if (username != null) System.out.println("Consumer with username: " + username + "connected.");
+                if (username != null) System.out.println("Consumer with username: " + username + " connected.");
                 //an einai prwti fora pou vlepoume to username kanoume initialize tin usernamesTopicsIndex
                 if (!usernamesTopicsIndex.containsKey(username))
                     usernamesTopicsIndex.put(username, new HashMap<String, Integer>());
