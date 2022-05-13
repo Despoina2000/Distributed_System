@@ -19,9 +19,12 @@ import java.util.HashMap;
  */
 public class Broker implements Runnable {
 
-    public static final int BROKER1 = 4000;
-    public static final int BROKER2 = 5555;
-    public static final int BROKER3 = 5984;
+    public static final int PORT_BROKER1 = 4000;
+    public static final int PORT_BROKER2 = 5555;
+    public static final int PORT_BROKER3 = 5984;
+    public static final String URL_BROKER1 = "127.0.0.1";
+    public static final String URL_BROKER2 = "127.0.0.1";
+    public static final String URL_BROKER3 = "127.0.0.1";
     public static Util util;
     public final String url = "localhost";
     public int port;
@@ -48,55 +51,13 @@ public class Broker implements Runnable {
      * Constructor tou broker
      * katalavenei an einai o prwtos,defteros i tritos broker kai analoga kanei initialize tin port.
      */
-    public Broker() {
+    public Broker(int brokerNumber) {
 
-        //destructor, deletes initBroker.txt if exists
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                File brokerFile = new File("initBroker.txt");
-                System.gc();
-                if (brokerFile.exists()) System.out.println(brokerFile.delete());
-            }
-        });
-
-        //initialize port according to what number broker it is, uses shared file initBroker.txt
-        try {
-            File brokerFile = new File("initBroker.txt");
-            //create file initBroker.txt if not exists
-            if (brokerFile.createNewFile()) {
-                BufferedWriter bw = new BufferedWriter(new FileWriter(brokerFile));
-                bw.write("0\n");
-                bw.close();
-            }
-            BufferedReader br = new BufferedReader(new FileReader(brokerFile));
-            String brokerFileLine = br.readLine();
-            BufferedWriter bw = new BufferedWriter(new FileWriter(brokerFile));
-            switch (brokerFileLine) {
-                case "0" -> {
-                    this.port = BROKER1;
-                    bw.write("1\n");
-                    br.close();
-                    bw.close();
-                }
-                case "1" -> {
-                    this.port = BROKER2;
-                    bw.write("2\n");
-                    br.close();
-                    bw.close();
-                }
-                case "2" -> {
-                    this.port = BROKER3;
-                    br.close();
-                    bw.close();
-                    System.gc();
-                    brokerFile.delete(); // deletes file initBroker.txt
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        switch (brokerNumber) {
+            case 1 -> this.port = PORT_BROKER1;
+            case 2 -> this.port = PORT_BROKER2;
+            case 3 -> this.port = PORT_BROKER3;
         }
-//        System.out.println("Broker port set to: " + port);
 
         //initialize util
         util = new Util();
@@ -108,9 +69,9 @@ public class Broker implements Runnable {
         usernamesTopicsIndex = new HashMap<>();
 
         //initialize inner hashmaps/arraylists
-        brokerPortsAndTopics.put(BROKER1, new ArrayList<>());
-        brokerPortsAndTopics.put(BROKER2, new ArrayList<>());
-        brokerPortsAndTopics.put(BROKER3, new ArrayList<>());
+        brokerPortsAndTopics.put(PORT_BROKER1, new ArrayList<>());
+        brokerPortsAndTopics.put(PORT_BROKER2, new ArrayList<>());
+        brokerPortsAndTopics.put(PORT_BROKER3, new ArrayList<>());
     }
 
     /**
@@ -124,9 +85,9 @@ public class Broker implements Runnable {
         try {
             serverSocket = new ServerSocket(port);
             //an einai o defteros broker kanei connect me ton prwto kai vazei to socket stin otherBrokers
-            if (port == BROKER2) {
+            if (port == PORT_BROKER2) {
                 System.out.println("Connecting to Broker1.");
-                Socket broker1Socket = new Socket(url, BROKER1);
+                Socket broker1Socket = new Socket(URL_BROKER1, PORT_BROKER1);
                 ObjectOutputStream broker1Writer = new ObjectOutputStream(broker1Socket.getOutputStream());
                 broker1Writer.flush();
                 otherBrokersOutputStreams.add(broker1Writer);
@@ -135,9 +96,9 @@ public class Broker implements Runnable {
                 new Thread(new BrokerBrokerConnection(broker1Socket, this, broker1Reader)).start(); // kanourio BrokerBrokerConnection
             }
             //an einai o tritos broker kanei connect me tous allous 2 kai vazei ta outputstreams stin otherBrokersOutputStream
-            if (port == BROKER3) {
+            if (port == PORT_BROKER3) {
                 System.out.println("Connecting to Broker1.");
-                Socket broker1Socket = new Socket(url, BROKER1);
+                Socket broker1Socket = new Socket(URL_BROKER1, PORT_BROKER1);
                 ObjectOutputStream broker1Writer = new ObjectOutputStream(broker1Socket.getOutputStream());
                 broker1Writer.flush();
                 otherBrokersOutputStreams.add(broker1Writer);
@@ -145,7 +106,7 @@ public class Broker implements Runnable {
                 ObjectInputStream broker1Reader = new ObjectInputStream(broker1Socket.getInputStream());
                 new Thread(new BrokerBrokerConnection(broker1Socket, this, broker1Reader)).start(); // kanourio BrokerBrokerConnection
                 System.out.println("Connecting to Broker2.");
-                Socket broker2Socket = new Socket(url, BROKER2);
+                Socket broker2Socket = new Socket(URL_BROKER2, PORT_BROKER2);
                 ObjectOutputStream broker2Writer = new ObjectOutputStream(broker2Socket.getOutputStream());
                 broker2Writer.flush();
                 otherBrokersOutputStreams.add(broker2Writer);
@@ -211,13 +172,13 @@ public class Broker implements Runnable {
     private int getResponsibleBrokerPort(String topic) {
         switch ((util.hash(topic).mod(BigInteger.valueOf(3))).intValue()) {
             case 0 -> {
-                return BROKER1;
+                return PORT_BROKER1;
             }
             case 1 -> {
-                return BROKER2;
+                return PORT_BROKER2;
             }
             case 2 -> {
-                return BROKER3;
+                return PORT_BROKER3;
             }
         }
         return 0; // something went wrong
