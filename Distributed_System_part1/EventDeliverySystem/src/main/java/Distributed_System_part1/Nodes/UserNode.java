@@ -18,9 +18,12 @@ import java.util.Random;
  * user node class, starts publisher and consumer
  */
 public class UserNode {
-    public static final int BROKER1 = 4000;
-    public static final int BROKER2 = 5555;
-    public static final int BROKER3 = 5984;
+    public static final int PORT_BROKER1 = 4000;
+    public static final int PORT_BROKER2 = 5555;
+    public static final int PORT_BROKER3 = 5984;
+    public static final String URL_BROKER1 = "127.0.0.1";
+    public static final String URL_BROKER2 = "127.0.0.1";
+    public static final String URL_BROKER3 = "127.0.0.1";
     public final String url = "localhost";
     public Util util;
 
@@ -51,9 +54,9 @@ public class UserNode {
         // currentBrokerPort = random broker port
         Random random = new Random();
         switch (random.nextInt(3)) {
-            case 0 -> this.currentBrokerPort = BROKER1;
-            case 1 -> this.currentBrokerPort = BROKER2;
-            case 2 -> this.currentBrokerPort = BROKER3;
+            case 0 -> this.currentBrokerPort = PORT_BROKER1;
+            case 1 -> this.currentBrokerPort = PORT_BROKER2;
+            case 2 -> this.currentBrokerPort = PORT_BROKER3;
         }
         util = new Util();
         publisher = new Publisher();
@@ -200,7 +203,11 @@ public class UserNode {
          */
         public void connectToBroker(int port) {
             try {
-                socket = new Socket(url, port);
+                switch (port) {
+                    case PORT_BROKER1 -> socket = new Socket(URL_BROKER1, PORT_BROKER1);
+                    case PORT_BROKER2 -> socket = new Socket(URL_BROKER2, PORT_BROKER2);
+                    case PORT_BROKER3 -> socket = new Socket(URL_BROKER3, PORT_BROKER3);
+                }
                 objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
                 objectOutputStream.writeObject("publisher");
                 objectOutputStream.flush();
@@ -310,7 +317,11 @@ public class UserNode {
         public void connectToBroker(int port) {
             try {
                 //connect to broker at port
-                socket = new Socket(url, port);
+                switch (port) {
+                    case PORT_BROKER1 -> socket = new Socket(URL_BROKER1, PORT_BROKER1);
+                    case PORT_BROKER2 -> socket = new Socket(URL_BROKER2, PORT_BROKER2);
+                    case PORT_BROKER3 -> socket = new Socket(URL_BROKER3, PORT_BROKER3);
+                }
                 objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
                 objectOutputStream.flush();
                 //send "consumer"
