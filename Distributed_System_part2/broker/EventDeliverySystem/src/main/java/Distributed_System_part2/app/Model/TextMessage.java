@@ -1,4 +1,4 @@
-package Distributed_System_part1.Model;
+package Distributed_System_part2.app.Model;
 
 import java.io.Serializable;
 import java.util.ArrayList;

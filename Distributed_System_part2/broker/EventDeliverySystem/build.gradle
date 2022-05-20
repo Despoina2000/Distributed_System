@@ -29,7 +29,7 @@ dependencies {
 
 application {
     // Define the main class for the application.
-    mainClass = 'Distributed_System_part1.EventDeliverySystem'
+    mainClass = 'Distributed_System_part2.EventDeliverySystem'
 }
 
 tasks.named('test') {
@@ -49,33 +49,33 @@ jar {
 
 task runBroker(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
-    mainClass = 'Distributed_System_part1.EventDeliverySystem'
+    mainClass = 'Distributed_System_part2.EventDeliverySystem'
     args 'broker'
 }
 
 task runUserNode(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
-    mainClass = 'Distributed_System_part1.EventDeliverySystem'
+    mainClass = 'Distributed_System_part2.EventDeliverySystem'
     standardInput = System.in
     args 'usernode'
 }
 
 task runbro(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
-    mainClass = 'Distributed_System_part1.EventDeliverySystem'
+    mainClass = 'Distributed_System_part2.EventDeliverySystem'
     args 'broker'
 }
 
 task runuser(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
-    mainClass = 'Distributed_System_part1.EventDeliverySystem'
+    mainClass = 'Distributed_System_part2.EventDeliverySystem'
     standardInput = System.in
     args 'usernode'
 }
 
 task runuse(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
-    mainClass = 'Distributed_System_part1.EventDeliverySystem'
+    mainClass = 'Distributed_System_part2.EventDeliverySystem'
     standardInput = System.in
     args 'usernode'
 }

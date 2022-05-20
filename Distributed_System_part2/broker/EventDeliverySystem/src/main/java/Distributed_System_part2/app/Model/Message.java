@@ -1,8 +1,5 @@
-package Distributed_System_part1.Model;
+package Distributed_System_part2.app.Model;
 
-import Distributed_System_part1.Util.ImageMetadata;
-
-import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 

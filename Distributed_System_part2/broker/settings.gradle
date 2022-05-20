@@ -7,5 +7,5 @@
  * in the user manual at https://docs.gradle.org/7.4.1/userguide/multi_project_builds.html
  */
 
-rootProject.name = 'Distributed_System_part1'
+rootProject.name = 'Distributed_System_part2'
 include('EventDeliverySystem')

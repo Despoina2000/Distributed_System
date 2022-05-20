@@ -1,10 +1,10 @@
-package Distributed_System_part1.Nodes;
+package Distributed_System_part2.app.Nodes;
 
-import Distributed_System_part1.Model.ImageMessage;
-import Distributed_System_part1.Model.Message;
-import Distributed_System_part1.Model.TextMessage;
-import Distributed_System_part1.Model.VideoMessage;
-import Distributed_System_part1.Util.Util;
+import Distributed_System_part2.app.Model.ImageMessage;
+import Distributed_System_part2.app.Model.Message;
+import Distributed_System_part2.app.Model.TextMessage;
+import Distributed_System_part2.app.Model.VideoMessage;
+import Distributed_System_part2.app.Util.Util;
 
 import java.io.*;
 import java.net.Socket;

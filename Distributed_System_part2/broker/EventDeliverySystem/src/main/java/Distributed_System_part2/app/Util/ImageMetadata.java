@@ -1,4 +1,4 @@
-package Distributed_System_part1.Util;
+package Distributed_System_part2.app.Util;
 
 import java.io.Serializable;
 

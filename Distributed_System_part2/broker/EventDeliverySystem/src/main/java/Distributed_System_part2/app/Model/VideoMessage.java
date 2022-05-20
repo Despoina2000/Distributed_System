@@ -1,36 +1,36 @@
-package Distributed_System_part1.Model;
+package Distributed_System_part2.app.Model;
 
-import Distributed_System_part1.Util.ImageMetadata;
+import Distributed_System_part2.app.Util.VideoMetadata;
 
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
- * image message, extends Message
+ * video message, extends Message
  */
-public class ImageMessage extends Message implements Serializable {
-
-    private final String contentType = "image";
-    private ImageMetadata imageMetadata;
+public class VideoMessage extends Message implements Serializable {
+    private final String contentType = "video";
+    private VideoMetadata videoMetadata;
     private File content;
     private ArrayList<byte[]> chunkedContent;
 
-    public ImageMessage(String username, String topic, ImageMetadata imageMetadata) {
+
+    public VideoMessage(String username, String topic, VideoMetadata videoMetadata) {
         super(username, topic);
-        this.imageMetadata = imageMetadata;
+        this.videoMetadata = videoMetadata;
     }
 
     /**
-     * overloaded constructor mazi me to content
+     * overloaded constructor mazi me to content file
      * @param username
      * @param topic
-     * @param imageMetadata
+     * @param videoMetadata
      * @param content
      */
-    public ImageMessage(String username, String topic, ImageMetadata imageMetadata, File content) {
+    public VideoMessage(String username, String topic, VideoMetadata videoMetadata, File content) {
         super(username, topic);
-        this.imageMetadata = imageMetadata;
+        this.videoMetadata = videoMetadata;
         this.content = content;
     }
 
@@ -38,12 +38,12 @@ public class ImageMessage extends Message implements Serializable {
      * overloaded constructor mazi me to content se chunks (tha apothikevete ston broker etsi)
      * @param username
      * @param topic
-     * @param imageMetadata
+     * @param videoMetadata
      * @param chunkedContent
      */
-    public ImageMessage(String username, String topic, ImageMetadata imageMetadata, ArrayList<byte[]> chunkedContent) {
+    public VideoMessage(String username, String topic, VideoMetadata videoMetadata, ArrayList<byte[]> chunkedContent) {
         super(username, topic);
-        this.imageMetadata = imageMetadata;
+        this.videoMetadata = videoMetadata;
         this.chunkedContent = chunkedContent;
     }
 
@@ -53,8 +53,8 @@ public class ImageMessage extends Message implements Serializable {
     }
 
     @Override
-    public ImageMetadata getMetadata() {
-        return imageMetadata;
+    public VideoMetadata getMetadata() {
+        return videoMetadata;
     }
 
     @Override
@@ -69,11 +69,11 @@ public class ImageMessage extends Message implements Serializable {
 
     @Override
     public String toString() {
-        return "ImageMessage{" +
+        return "VideoMessage{" +
                 "username='" + username + '\'' +
                 ", topic='" + topic + '\'' +
                 ", contentType='" + contentType + '\'' +
-                ", imageMetadata=" + imageMetadata +
+                ", videoMetadata=" + videoMetadata +
                 '}';
     }
 }

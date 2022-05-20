@@ -1,7 +1,7 @@
-package Distributed_System_part1;
+package Distributed_System_part2;
 
-import Distributed_System_part1.Nodes.Broker;
-import Distributed_System_part1.Nodes.UserNode;
+import Distributed_System_part2.app.Nodes.Broker;
+import Distributed_System_part2.app.Nodes.UserNode;
 
 import java.util.Locale;
 
