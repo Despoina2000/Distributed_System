@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+import androidx.databinding.ObservableArrayList;
+
 /**
  * user node class, starts publisher and consumer
  */
@@ -21,17 +23,18 @@ public class UserNode {
     public static final int PORT_BROKER1 = 4000;
     public static final int PORT_BROKER2 = 5555;
     public static final int PORT_BROKER3 = 5984;
-    public static final String URL_BROKER1 = "127.0.0.1";
-    public static final String URL_BROKER2 = "127.0.0.1";
-    public static final String URL_BROKER3 = "127.0.0.1";
     public final String url = "localhost";
     public Util util;
 
     public volatile String username;
+    public volatile String URL_BROKER1;
+    public volatile String URL_BROKER2;
+    public volatile String URL_BROKER3;
     public volatile int currentBrokerPort;
     public volatile String currentTopic = null;
     public volatile HashMap<Integer, ArrayList<String>> brokerPortsAndTopics;
-    public volatile HashMap<String, ArrayList<Message>> topicsMessages; //edw mporoume na kratame osa minimata exoume diavasei idi
+    public volatile ObservableArrayList<String> topics;
+    public volatile HashMap<String, ObservableArrayList<Message>> topicsMessages; //edw kratame osa minimata exoume diavasei idi
 
     private Publisher publisher;
     private Consumer consumer;
@@ -40,17 +43,16 @@ public class UserNode {
     /**
      * Main thread: publisher, other thread: consumer
      */
-    public UserNode() {
-        //read and set username
+    public UserNode(String username, String URL_BROKER1, String URL_BROKER2, String URL_BROKER3) {
+        this.username = username;
+        this.URL_BROKER1 = URL_BROKER1;
+        this.URL_BROKER2 = URL_BROKER2;
+        this.URL_BROKER3 = URL_BROKER3;
+
         brokerPortsAndTopics = new HashMap<Integer, ArrayList<String>>();
-        topicsMessages = new HashMap<String, ArrayList<Message>>();
-        try {
-            br = new BufferedReader(new InputStreamReader(System.in));
-            System.out.println("Your username:");
-            this.username = br.readLine();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        topicsMessages = new HashMap<String, ObservableArrayList<Message>>();
+        topics = new ObservableArrayList<String>();
+
         // currentBrokerPort = random broker port
         Random random = new Random();
         switch (random.nextInt(3)) {
@@ -64,131 +66,42 @@ public class UserNode {
                 this.currentBrokerPort = PORT_BROKER3;
                 break;
         }
+
         util = new Util();
         publisher = new Publisher();
         consumer = new Consumer(this);
         consumer.start();
-        // create new Folder with name username (to store images and videos)
-        File userDirectory = new File("./" + username);
-        if (userDirectory.mkdirs()) System.out.println("Created user directory.");
-        userDirectory.deleteOnExit();
 
-        //destructor to delete folder and files, kaleitai otan kleinoume to app me CTRL+C h /quit
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                if (userDirectory.exists()) {
-                    File[] allContents = userDirectory.listFiles();
-                    if (allContents != null) {
-                        for (File file : allContents) {
-                            if (file.delete()) System.out.println("Deleted file:" + file.getName());
-                        }
-                    }
-                }
-                if (userDirectory.delete()) System.out.println("Deleted folder:" + userDirectory.getName());
-            }
-        });
-
-        startCLI();
-        System.exit(0);
+        //TODO: create folder (to store images and videos)
     }
 
-    /**
-     * arxizei to command line interface gia na dwsoume entoles (px /topic , message klp)
-     */
-    private void startCLI() {
-        System.out.println("Command line interface started:");
-        printHelp();
-        String userInput = " ";
-        while (!userInput.equals("/quit")) {
-            try {
-                userInput = br.readLine();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            if (userInput.startsWith("/")) {
-                if (userInput.startsWith("/topic ")) {
-                    this.currentTopic = userInput.substring(7);
-                    if (!topicsMessages.containsKey(currentTopic)) topicsMessages.put(currentTopic, new ArrayList<>());
-                    publisher.setTopic();
-                    consumer.setTopic();
-                } else if (userInput.equals("/topics")) {
-                    consumer.requestTopics();
-                } else if (userInput.startsWith("/image ")) {
-                    // send ImageMessage
-                    try {
-                        File image;
-                        if ((userInput).substring(7).contains("/") || (userInput).substring(7).contains("\\") || (userInput).substring(7).contains(".")) {
-                            image = new File((userInput).substring(7));
-                        } else {
-                            InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("images/" + userInput.substring(7) + ".jpg");
-                            image = new File(userInput.substring(7) + ".jpg");
-                            OutputStream os = new FileOutputStream(image);
-//                            is.transferTo(os);
-                        }
-                        publisher.sendMessage(new ImageMessage(username, currentTopic, util.extractImageMetadata(image), image));
-                        System.gc();
-                        image.delete();
-                    } catch (NullPointerException e) {
-                        System.out.println("File does not exist/Incorrect file path");
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                } else if (userInput.startsWith("/video ")) {
-                    // send VideoMessage
-                    try {
-                        File video;
-                        if ((userInput).substring(7).contains("/") || (userInput).substring(7).contains("\\") || (userInput).substring(7).contains(".")) {
-                            video = new File((userInput).substring(7));
-                        } else {
-                            InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("videos/" + userInput.substring(7) + ".mp4");
-                            video = new File(userInput.substring(7) + ".mp4");
-                            OutputStream os = new FileOutputStream(video);
-//                            is.transferTo(os);
-                        }
-                        publisher.sendMessage(new VideoMessage(username, currentTopic, util.extractVideoMetadata(video), video));
-                        System.gc();
-                        video.delete();
-                    } catch (NullPointerException e) {
-                        System.out.println("File does not exist/Incorrect file path");
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                } else if (userInput.equals("/images")) {
-                    System.out.println("clouds\ndog\nflowers\nparis\nUse /image <image name> to send image.");
-                } else if (userInput.equals("/videos")) {
-                    System.out.println("birds\nmolten-metal\nslowmo-dog\nwingsuit\nUse /video <video name> to send video.");
-                } else if (userInput.equals("/quit")) {
-                    publisher.disconnect();
-                    consumer.disconnect();
-                    break;
-                } else {
-                    printHelp();
-                }
-            } else {
-                if (currentTopic == null) {
-                    System.out.println("You have to set a topic first with: /topic <your topic> (type /help for help");
-                } else {
-                    publisher.sendMessage(new TextMessage(username, currentTopic, userInput));
-                }
-            }
-        }
+    public void setTopic(String currentTopic) {
+        this.currentTopic = currentTopic;
+        if (!topicsMessages.containsKey(currentTopic)) topicsMessages.put(currentTopic, new ObservableArrayList<>());
+        publisher.setTopic();
+        consumer.setTopic();
     }
 
-    private void printHelp() {
-        System.out.println("*******************************************************");
-        System.out.println("*   USAGE:                                            *");
-        System.out.println("*******************************************************");
-        System.out.println("*   /topic <topic>      : set current topic           *");
-        System.out.println("*   /topics             : request available topics    *");
-        System.out.println("*   <message>           : send new TextMessage        *");
-        System.out.println("*   /image <imagepath>  : send new ImageMessage       *");
-        System.out.println("*   /video <videopath>  : send new VideoMessage       *");
-        System.out.println("*   /images             : lists available images      *");
-        System.out.println("*   /videos             : lists available videos      *");
-        System.out.println("*   /help               : display this message        *");
-        System.out.println("*   /quit               : close application           *");
-        System.out.println("*******************************************************");
+    public void requestTopics() {
+        consumer.requestTopics();
+        //TODO: add topics to ObservableArrayList
+    }
+
+    public void quit() {
+        publisher.disconnect();
+        consumer.disconnect();
+    }
+
+    public void sendTextMessage(String msg) {
+        publisher.sendMessage(new TextMessage(username, currentTopic, msg));
+    }
+
+    public void sendImageMessage(File image) {
+        publisher.sendMessage(new ImageMessage(username, currentTopic, util.extractImageMetadata(image), image));
+    }
+
+    public void sendVideoMessage(File video) {
+        publisher.sendMessage(new VideoMessage(username, currentTopic, util.extractVideoMetadata(video), video));
     }
 
 
@@ -378,8 +291,6 @@ public class UserNode {
                         incomingMessage = objectInputStream.readObject();
                         if (TextMessage.class.equals(incomingMessage.getClass())) {
                             topicsMessages.get(currentTopic).add((TextMessage) incomingMessage); // add message to topicsMessages list
-                            System.out.println(((TextMessage) incomingMessage).getUsername() +
-                                    ": " + ((TextMessage) incomingMessage).getContent());
                         } else if (ImageMessage.class.equals(incomingMessage.getClass())) {
                             ImageMessage tempImageMessage = new ImageMessage(
                                     ((ImageMessage) incomingMessage).getUsername(),
@@ -388,8 +299,6 @@ public class UserNode {
                                     receiveFileChunks(((ImageMessage) incomingMessage).getMetadata().getFileSize(),
                                             ((ImageMessage) incomingMessage).getMetadata().getFileName()));
                             topicsMessages.get(currentTopic).add(tempImageMessage);
-                            System.out.println(((ImageMessage) incomingMessage).getUsername() +
-                                    " sent image " + ((ImageMessage) incomingMessage).getMetadata().getFileName());
                         } else if (VideoMessage.class.equals(incomingMessage.getClass())) {
                             VideoMessage tempVideoMessage = new VideoMessage(
                                     ((VideoMessage) incomingMessage).getUsername(),
@@ -398,12 +307,10 @@ public class UserNode {
                                     receiveFileChunks(((VideoMessage) incomingMessage).getMetadata().getFileSize(),
                                             ((VideoMessage) incomingMessage).getMetadata().getFileName()));
                             topicsMessages.get(currentTopic).add(tempVideoMessage);
-                            System.out.println(((VideoMessage) incomingMessage).getUsername() +
-                                    " sent video " + ((VideoMessage) incomingMessage).getMetadata().getFileName());
                         } else if (brokerPortsAndTopics.getClass().equals(incomingMessage.getClass())) {
                             //receive lista brokerPortsAndTopics - update tin topikh brokerPortsAndTopics
                             brokerPortsAndTopics.putAll((Map<? extends Integer, ? extends ArrayList<String>>) incomingMessage);
-                            System.out.println(brokerPortsAndTopics);
+                            //TODO: add all topics in ObservableArrayList topics
                         } else if (String.class.equals(incomingMessage.getClass())) {
                             if (incomingMessage.equals("there?")) objectOutputStream.writeObject("yes");
                         } else {
@@ -447,6 +354,7 @@ public class UserNode {
                     e.printStackTrace();
                 }
             }
+            //TODO: fix incomingFile destination for android
             File incomingFile = new File(username + "/" + fileName);
             return util.mergeChunksToFile(chunksList, incomingFile);
         }
