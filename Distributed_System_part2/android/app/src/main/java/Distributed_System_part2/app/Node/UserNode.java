@@ -76,15 +76,19 @@ public class UserNode {
         //TODO: create folder (to store images and videos)
     }
 
-    public static synchronized UserNode getUserNodeInstance(String username, String URL_BROKER1, String URL_BROKER2, String URL_BROKER3) {
+    public static synchronized void createUserNodeInstance(String username, String URL_BROKER1, String URL_BROKER2, String URL_BROKER3) {
         if (userNodeInstance == null) {
             userNodeInstance = new UserNode(username,URL_BROKER1,URL_BROKER2,URL_BROKER3);
         }
+    }
+
+    public static UserNode getUserNodeInstance() {
         return userNodeInstance;
     }
 
-    public static synchronized UserNode getUserNodeInstance() {
-        return userNodeInstance;
+    public static boolean isUserNodeInitialized() {
+        if (userNodeInstance == null) return false;
+        return true;
     }
 
     public void setTopic(String currentTopic) {
@@ -96,6 +100,7 @@ public class UserNode {
 
     public void requestTopics() {
         consumer.requestTopics();
+        System.out.println("requesting topics");
         //TODO: add topics to ObservableArrayList
     }
 

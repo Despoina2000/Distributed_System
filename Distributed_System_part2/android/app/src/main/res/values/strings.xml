@@ -4,4 +4,5 @@
     <string name="disconnect_button_text">Disconnect</string>
     <string name="new_topic_button_text">New Topic</string>
     <string name="refresh_topics_button_text">Refresh</string>
+    <string name="send_message_button_text">Send</string>
 </resources>
