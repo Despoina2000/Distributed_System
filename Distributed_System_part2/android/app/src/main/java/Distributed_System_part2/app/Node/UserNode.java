@@ -102,6 +102,7 @@ public class UserNode {
     public void quit() {
         publisher.disconnect();
         consumer.disconnect();
+        userNodeInstance = null;
     }
 
     public void sendTextMessage(String msg) {
