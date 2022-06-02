@@ -1,14 +1,18 @@
 package Distributed_System_part2.app;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.ObservableList;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -22,7 +26,6 @@ public class MainActivity extends AppCompatActivity {
     private Button refreshTopicsButton;
     private ListView topicsListView;
     private ArrayAdapter topicsAdapter;
-    public UserNode userNode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,21 +41,34 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        //change thread policy to run from main thread
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
                 .permitAll().build();
         StrictMode.setThreadPolicy(policy);
-        newTopicButton.setEnabled(false);
-        refreshTopicsButton.setEnabled(false);
 
+        if (!connected) {
+            newTopicButton.setEnabled(false);
+            refreshTopicsButton.setEnabled(false);
+        }
+
+        //request topics if going back to topics list
+        if (UserNode.isUserNodeInitialized()) {
+            UserNode.getUserNodeInstance().requestTopics();
+        }
+
+        //connect button on click listener
         connectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //button = connect
                 if (!connected){
                     //TODO: request username and broker IPs, create new usernode
-                    userNode = new UserNode("username","10.0.2.2","10.0.2.2","10.0.2.2");
+                    //create usernode
+                    UserNode.createUserNodeInstance("username","10.0.2.2","10.0.2.2","10.0.2.2");
 
-                    topicsAdapter = new ArrayAdapter(MainActivity.this, android.R.layout.simple_list_item_1,userNode.topics);
-                    userNode.topics.addOnListChangedCallback(new ObservableList.OnListChangedCallback() {
+                    //create topicsadapter, add callback on observable list topics
+                    topicsAdapter = new ArrayAdapter(MainActivity.this, android.R.layout.simple_list_item_1,UserNode.getUserNodeInstance().topics);
+                    UserNode.getUserNodeInstance().topics.addOnListChangedCallback(new ObservableList.OnListChangedCallback() {
                         @Override
                         public void onChanged(ObservableList sender) {
                             runOnUiThread(new Runnable() {
@@ -103,12 +119,16 @@ public class MainActivity extends AppCompatActivity {
                             });
                         }
                     });
+                    //set adapter for topics list view
                     topicsListView.setAdapter(topicsAdapter);
 
+                    //set onclick listener for every item in list
                     topicsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                            Toast.makeText(MainActivity.this, adapterView.getItemAtPosition(i).toString(), Toast.LENGTH_LONG).show();
+                            Intent intent = new Intent(MainActivity.this, TopicActivity.class);
+                            intent.putExtra("topic",adapterView.getItemAtPosition(i).toString()); // put the topic string in the intent extras
+                            startActivity(intent);
                         }
                     });
 
@@ -116,9 +136,10 @@ public class MainActivity extends AppCompatActivity {
                     newTopicButton.setEnabled(true);
                     connectButton.setText(R.string.disconnect_button_text);
                     connected = true;
-                } else {
+                } else { // button = disconnect
                     //TODO: disconnect, destroy usernode
-                    userNode.quit();
+                    UserNode.getUserNodeInstance().quit();
+                    topicsAdapter.clear();
                     refreshTopicsButton.setEnabled(false);
                     newTopicButton.setEnabled(false);
                     connectButton.setText(R.string.connect_button_text);
@@ -127,20 +148,37 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        final int[] i = {1};
+        //new topic button on click listener
         newTopicButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //TODO: request new topic String, usernode.setTopic, go to TopicActivity with this topic string
-                userNode.setTopic("test" + i[0]);
-                i[0]++;
+                AlertDialog.Builder setTopicDialog = new AlertDialog.Builder(MainActivity.this);
+                final EditText setTopicDialogEditText = new EditText(MainActivity.this);
+                setTopicDialog.setView(setTopicDialogEditText);
+                setTopicDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        Intent intent = new Intent(MainActivity.this, TopicActivity.class);
+                        intent.putExtra("topic",setTopicDialogEditText.getText().toString()); // put the topic string in the intent extras
+                        startActivity(intent);
+                    }
+                });
+                setTopicDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        // do nothing if cancel
+                    }
+                });
+
+                setTopicDialog.show();
             }
         });
 
+        //refresh topics button on click listener
         refreshTopicsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                userNode.requestTopics();
+                UserNode.getUserNodeInstance().requestTopics();
             }
         });
     }

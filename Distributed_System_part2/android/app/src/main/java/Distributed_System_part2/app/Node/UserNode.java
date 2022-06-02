@@ -40,10 +40,11 @@ public class UserNode {
     private Consumer consumer;
     private BufferedReader br;
 
+    private static UserNode userNodeInstance = null;
     /**
      * Main thread: publisher, other thread: consumer
      */
-    public UserNode(String username, String URL_BROKER1, String URL_BROKER2, String URL_BROKER3) {
+    private UserNode(String username, String URL_BROKER1, String URL_BROKER2, String URL_BROKER3) {
         this.username = username;
         this.URL_BROKER1 = URL_BROKER1;
         this.URL_BROKER2 = URL_BROKER2;
@@ -75,6 +76,21 @@ public class UserNode {
         //TODO: create folder (to store images and videos)
     }
 
+    public static synchronized void createUserNodeInstance(String username, String URL_BROKER1, String URL_BROKER2, String URL_BROKER3) {
+        if (userNodeInstance == null) {
+            userNodeInstance = new UserNode(username,URL_BROKER1,URL_BROKER2,URL_BROKER3);
+        }
+    }
+
+    public static UserNode getUserNodeInstance() {
+        return userNodeInstance;
+    }
+
+    public static boolean isUserNodeInitialized() {
+        if (userNodeInstance == null) return false;
+        return true;
+    }
+
     public void setTopic(String currentTopic) {
         this.currentTopic = currentTopic;
         if (!topicsMessages.containsKey(currentTopic)) topicsMessages.put(currentTopic, new ObservableArrayList<>());
@@ -84,12 +100,14 @@ public class UserNode {
 
     public void requestTopics() {
         consumer.requestTopics();
+        System.out.println("requesting topics");
         //TODO: add topics to ObservableArrayList
     }
 
     public void quit() {
         publisher.disconnect();
         consumer.disconnect();
+        userNodeInstance = null;
     }
 
     public void sendTextMessage(String msg) {
