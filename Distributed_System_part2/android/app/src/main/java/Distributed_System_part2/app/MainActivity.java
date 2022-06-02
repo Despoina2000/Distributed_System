@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if (!connected){
                     //TODO: request username and broker IPs, create new usernode
-                    userNode = new UserNode("username","10.0.2.2","10.0.2.2","10.0.2.2");
+                    userNode = UserNode.getUserNodeInstance("username","10.0.2.2","10.0.2.2","10.0.2.2");
 
                     topicsAdapter = new ArrayAdapter(MainActivity.this, android.R.layout.simple_list_item_1,userNode.topics);
                     userNode.topics.addOnListChangedCallback(new ObservableList.OnListChangedCallback() {

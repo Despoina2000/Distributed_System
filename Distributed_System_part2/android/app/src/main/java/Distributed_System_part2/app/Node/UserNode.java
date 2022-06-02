@@ -40,10 +40,11 @@ public class UserNode {
     private Consumer consumer;
     private BufferedReader br;
 
+    private static UserNode userNodeInstance = null;
     /**
      * Main thread: publisher, other thread: consumer
      */
-    public UserNode(String username, String URL_BROKER1, String URL_BROKER2, String URL_BROKER3) {
+    private UserNode(String username, String URL_BROKER1, String URL_BROKER2, String URL_BROKER3) {
         this.username = username;
         this.URL_BROKER1 = URL_BROKER1;
         this.URL_BROKER2 = URL_BROKER2;
@@ -73,6 +74,17 @@ public class UserNode {
         consumer.start();
 
         //TODO: create folder (to store images and videos)
+    }
+
+    public static synchronized UserNode getUserNodeInstance(String username, String URL_BROKER1, String URL_BROKER2, String URL_BROKER3) {
+        if (userNodeInstance == null) {
+            userNodeInstance = new UserNode(username,URL_BROKER1,URL_BROKER2,URL_BROKER3);
+        }
+        return userNodeInstance;
+    }
+
+    public static synchronized UserNode getUserNodeInstance() {
+        return userNodeInstance;
     }
 
     public void setTopic(String currentTopic) {
