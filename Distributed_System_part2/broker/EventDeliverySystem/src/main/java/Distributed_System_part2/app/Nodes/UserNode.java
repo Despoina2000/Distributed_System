@@ -387,7 +387,7 @@ public class UserNode {
                             brokerPortsAndTopics.putAll((Map<? extends Integer, ? extends ArrayList<String>>) incomingMessage);
                             System.out.println(brokerPortsAndTopics);
                         } else if (String.class.equals(incomingMessage.getClass())) {
-                            if (incomingMessage.equals("there?")) objectOutputStream.writeObject("yes");
+                            if (incomingMessage.equals("there?" + currentTopic)) objectOutputStream.writeObject("yes");
                         } else {
                             System.out.println(incomingMessage);
                             System.out.println(incomingMessage.getClass().toString());
