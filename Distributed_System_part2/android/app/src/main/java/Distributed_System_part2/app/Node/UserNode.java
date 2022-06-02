@@ -167,7 +167,7 @@ public class UserNode {
                     publisher.disconnect();
                     publisher.connectToBroker(currentBrokerPort);
                     publisher.setTopic();
-                    consumer.disconnect();
+//                    consumer.disconnect();
                     consumer.connectToBroker(currentBrokerPort);
                     consumer.setTopic();
                 }
@@ -240,7 +240,9 @@ public class UserNode {
          * @param port
          */
         public void connectToBroker(int port) {
+
             try {
+//                if (socket != null) socket.close();
                 //connect to broker at port
                 switch (port) {
                     case PORT_BROKER1:
@@ -254,9 +256,9 @@ public class UserNode {
                         break;
                 }
                 objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-                objectOutputStream.flush();
                 //send "consumer"
                 objectOutputStream.writeObject("consumer");
+                objectOutputStream.flush();
                 //read "username?"
                 objectInputStream = new ObjectInputStream(socket.getInputStream());
                 if (objectInputStream.readObject().equals("username?"))
@@ -311,8 +313,13 @@ public class UserNode {
                             //receive lista brokerPortsAndTopics - update tin topikh brokerPortsAndTopics
                             brokerPortsAndTopics.putAll((Map<? extends Integer, ? extends ArrayList<String>>) incomingMessage);
                             //TODO: add all topics in ObservableArrayList topics
+                            topics.clear();
+                            for (ArrayList<String> t : brokerPortsAndTopics.values()) {
+                                topics.addAll(t);
+                            }
+                            System.out.println(topics);
                         } else if (String.class.equals(incomingMessage.getClass())) {
-                            if (incomingMessage.equals("there?")) objectOutputStream.writeObject("yes");
+                            if (incomingMessage.equals("there?" + currentTopic)) objectOutputStream.writeObject("yes");
                         } else {
                             System.out.println(incomingMessage);
                             System.out.println(incomingMessage.getClass().toString());

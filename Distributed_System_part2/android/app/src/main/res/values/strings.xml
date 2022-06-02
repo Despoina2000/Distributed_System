@@ -3,4 +3,5 @@
     <string name="connect_button_text">Connect</string>
     <string name="disconnect_button_text">Disconnect</string>
     <string name="new_topic_button_text">New Topic</string>
+    <string name="refresh_topics_button_text">Refresh</string>
 </resources>
