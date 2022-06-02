@@ -383,7 +383,7 @@ public class Broker implements Runnable {
                             while (!socket.isClosed() && socket.getInputStream().available() == 0) {
                                 i++;
                                 if (i == 5) { // check every 5 seconds if consumer is still connected
-                                    brokerConsumerOutputStream.writeObject("there?");
+                                    brokerConsumerOutputStream.writeObject("there?" + currentTopic);
                                     Object consumerAnswer = brokerConsumerInputStream.readObject();
                                     if (!consumerAnswer.equals("yes")) {
                                         if (consumerAnswer.equals("/getTopics")) {
