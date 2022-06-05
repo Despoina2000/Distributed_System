@@ -20,6 +20,9 @@ public class TopicActivity extends AppCompatActivity {
     private TextView currentTopicTextView;
     private EditText messageEditText;
     private Button sendMessageButton;
+    private Button sendImageButton;
+    private Button sendVideoButton;
+    private Button cameraButton;
     private ListView messagesListView;
     private ArrayAdapter messagesAdapter;
 
@@ -36,6 +39,9 @@ public class TopicActivity extends AppCompatActivity {
         currentTopicTextView = (TextView)findViewById(R.id.currentTopicTextView);
         messageEditText = (EditText)findViewById(R.id.messageEditText);
         sendMessageButton = (Button)findViewById(R.id.sendMessageButton);
+        sendMessageButton = (Button)findViewById(R.id.sendMessageButton);
+        sendImageButton = (Button)findViewById(R.id.sendImageButton);
+        cameraButton = (Button)findViewById(R.id.cameraButton);
         messagesListView = (ListView)findViewById(R.id.messagesListView);
     }
 
