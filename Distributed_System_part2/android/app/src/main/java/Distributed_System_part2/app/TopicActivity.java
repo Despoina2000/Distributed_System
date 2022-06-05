@@ -61,6 +61,30 @@ public class TopicActivity extends AppCompatActivity {
             }
         });
 
+        //send image button on click listener
+        sendImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //TODO: pick image and send it
+            }
+        });
+
+        //send video button on click listener
+        sendVideoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //TODO: pick video and send it
+            }
+        });
+
+        //camera button on click listener
+        cameraButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //TODO: take photo or image and send it
+            }
+        });
+
         //messages adapter initialization
         messagesAdapter = new ArrayAdapter(TopicActivity.this,android.R.layout.simple_list_item_1, UserNode.getUserNodeInstance().topicsMessages.get(currentTopic));
         UserNode.getUserNodeInstance().topicsMessages.get(currentTopic).addOnListChangedCallback(new ObservableList.OnListChangedCallback() {
