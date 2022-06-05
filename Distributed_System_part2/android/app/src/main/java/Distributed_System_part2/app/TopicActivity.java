@@ -39,8 +39,8 @@ public class TopicActivity extends AppCompatActivity {
         currentTopicTextView = (TextView)findViewById(R.id.currentTopicTextView);
         messageEditText = (EditText)findViewById(R.id.messageEditText);
         sendMessageButton = (Button)findViewById(R.id.sendMessageButton);
-        sendMessageButton = (Button)findViewById(R.id.sendMessageButton);
         sendImageButton = (Button)findViewById(R.id.sendImageButton);
+        sendVideoButton = (Button)findViewById(R.id.sendVideoButton);
         cameraButton = (Button)findViewById(R.id.cameraButton);
         messagesListView = (ListView)findViewById(R.id.messagesListView);
     }
