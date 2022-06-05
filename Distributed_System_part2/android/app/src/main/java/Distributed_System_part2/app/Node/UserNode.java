@@ -1,5 +1,7 @@
 package Distributed_System_part2.app.Node;
 
+import android.os.Environment;
+
 import Distributed_System_part2.app.Model.ImageMessage;
 import Distributed_System_part2.app.Model.Message;
 import Distributed_System_part2.app.Model.TextMessage;
@@ -381,8 +383,13 @@ public class UserNode {
                     e.printStackTrace();
                 }
             }
-            //TODO: fix incomingFile destination for android
-            File incomingFile = new File(username + "/" + fileName);
+            //TODO: items now go to folder Downloads
+            String state = Environment.getExternalStorageState();
+            //external storage availability check
+            if (!Environment.MEDIA_MOUNTED.equals(state)) {
+                return null;
+            }
+            File incomingFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName);
             return util.mergeChunksToFile(chunksList, incomingFile);
         }
 
