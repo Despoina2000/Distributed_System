@@ -20,6 +20,9 @@ public class TopicActivity extends AppCompatActivity {
     private TextView currentTopicTextView;
     private EditText messageEditText;
     private Button sendMessageButton;
+    private Button sendImageButton;
+    private Button sendVideoButton;
+    private Button cameraButton;
     private ListView messagesListView;
     private ArrayAdapter messagesAdapter;
 
@@ -36,6 +39,9 @@ public class TopicActivity extends AppCompatActivity {
         currentTopicTextView = (TextView)findViewById(R.id.currentTopicTextView);
         messageEditText = (EditText)findViewById(R.id.messageEditText);
         sendMessageButton = (Button)findViewById(R.id.sendMessageButton);
+        sendImageButton = (Button)findViewById(R.id.sendImageButton);
+        sendVideoButton = (Button)findViewById(R.id.sendVideoButton);
+        cameraButton = (Button)findViewById(R.id.cameraButton);
         messagesListView = (ListView)findViewById(R.id.messagesListView);
     }
 
@@ -52,6 +58,30 @@ public class TopicActivity extends AppCompatActivity {
             public void onClick(View view) {
                 UserNode.getUserNodeInstance().sendTextMessage(messageEditText.getText().toString());
                 messageEditText.getText().clear();
+            }
+        });
+
+        //send image button on click listener
+        sendImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //TODO: pick image and send it
+            }
+        });
+
+        //send video button on click listener
+        sendVideoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //TODO: pick video and send it
+            }
+        });
+
+        //camera button on click listener
+        cameraButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //TODO: take photo or image and send it
             }
         });
 
