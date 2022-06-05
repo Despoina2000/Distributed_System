@@ -95,7 +95,8 @@ public class UserNode {
         this.currentTopic = currentTopic;
         if (!topicsMessages.containsKey(currentTopic)) topicsMessages.put(currentTopic, new ObservableArrayList<>());
         publisher.setTopic();
-        consumer.setTopic();
+//        consumer.connectToBroker(currentBrokerPort);
+//        consumer.setTopic();
     }
 
     public void requestTopics() {
@@ -177,6 +178,7 @@ public class UserNode {
                 //perimenoume na mas pei o broker na sinexisoume
                 if (brokerAnswer.equals("continue")) {
 //                    System.out.println("broker sent continue");
+                    consumer.setTopic();
                     System.out.println("Current topic: " + currentTopic);
                 } else {
                     // an i apantisi einai broker port thetoume currentBrokerPort = port
@@ -236,7 +238,7 @@ public class UserNode {
 
     private class Consumer extends Thread {
         private UserNode parent;
-        private Socket socket;
+        private Socket socket = null;
         private ObjectOutputStream objectOutputStream;
         private ObjectInputStream objectInputStream;
 
@@ -260,7 +262,7 @@ public class UserNode {
         public void connectToBroker(int port) {
 
             try {
-//                if (socket != null) socket.close();
+//                if (socket != null) disconnect();
                 //connect to broker at port
                 switch (port) {
                     case PORT_BROKER1:
@@ -389,7 +391,7 @@ public class UserNode {
          */
         public void disconnect() {
             try {
-//                objectOutputStream.writeObject("/disconnect");
+                objectOutputStream.writeObject("/disconnect");
                 objectOutputStream.close();
                 objectInputStream.close();
                 socket.close();

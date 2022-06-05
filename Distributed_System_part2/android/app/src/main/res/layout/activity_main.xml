@@ -24,8 +24,8 @@
 
     <ListView
         android:id="@+id/topicsListView"
-        android:layout_width="409dp"
-        android:layout_height="681dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:layout_marginBottom="2dp"
         app:layout_constraintBottom_toTopOf="@+id/refreshTopicsButton"
         app:layout_constraintEnd_toEndOf="parent"
