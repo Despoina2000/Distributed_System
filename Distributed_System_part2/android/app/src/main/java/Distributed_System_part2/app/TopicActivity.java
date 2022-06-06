@@ -86,7 +86,7 @@ public class TopicActivity extends AppCompatActivity {
         });
 
         //messages adapter initialization
-        messagesAdapter = new ArrayAdapter(TopicActivity.this,android.R.layout.simple_list_item_1, UserNode.getUserNodeInstance().topicsMessages.get(currentTopic));
+        messagesAdapter = new MessageAdapter(TopicActivity.this,R.layout.message_layout, UserNode.getUserNodeInstance().topicsMessages.get(currentTopic));
         UserNode.getUserNodeInstance().topicsMessages.get(currentTopic).addOnListChangedCallback(new ObservableList.OnListChangedCallback() {
             @Override
             public void onChanged(ObservableList sender) {
