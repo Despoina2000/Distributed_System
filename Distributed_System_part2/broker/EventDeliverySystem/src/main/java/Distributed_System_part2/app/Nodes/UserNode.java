@@ -121,8 +121,8 @@ public class UserNode {
                             is.transferTo(os);
                         }
                         publisher.sendMessage(new ImageMessage(username, currentTopic, util.extractImageMetadata(image), image));
-                        System.gc();
-                        image.delete();
+//                        System.gc();
+//                        image.delete();
                     } catch (NullPointerException e) {
                         System.out.println("File does not exist/Incorrect file path");
                     } catch (IOException e) {
@@ -141,8 +141,8 @@ public class UserNode {
                             is.transferTo(os);
                         }
                         publisher.sendMessage(new VideoMessage(username, currentTopic, util.extractVideoMetadata(video), video));
-                        System.gc();
-                        video.delete();
+//                        System.gc();
+//                        video.delete();
                     } catch (NullPointerException e) {
                         System.out.println("File does not exist/Incorrect file path");
                     } catch (IOException e) {
