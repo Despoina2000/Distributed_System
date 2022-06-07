@@ -8,7 +8,9 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.text.InputType;
+import android.os.Environment;
+import android.os.StrictMode;
+import android.provider.MediaStore;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -33,8 +35,11 @@ public class TopicActivity extends AppCompatActivity {
 
     private String currentTopic;
 
+    private Uri fileUri;
+
     private static final int PICK_IMAGE = 1;
     private static final int PICK_VIDEO = 2;
+    private static final int CAMERA = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +61,10 @@ public class TopicActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+
+        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+        StrictMode.setVmPolicy(builder.build());
+
         //set current topic
         currentTopicTextView.setText(currentTopic);
         UserNode.getUserNodeInstance().setTopic(currentTopic);
@@ -94,6 +103,12 @@ public class TopicActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //TODO: take photo or image and send it
+                //TODO: fix for API 30
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                String f = System.currentTimeMillis()+".jpg"; // Designated name
+                fileUri = Uri.fromFile(new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), f)); // Specify the uri of the image to be saved, where the image is saved in the system album
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
+                startActivityForResult(intent, CAMERA);
             }
         });
 
@@ -155,8 +170,11 @@ public class TopicActivity extends AppCompatActivity {
         messagesListView.setAdapter(messagesAdapter);
     }
 
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+
+        super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == Activity.RESULT_OK) {
             Uri uri = null;
@@ -166,9 +184,13 @@ public class TopicActivity extends AppCompatActivity {
                     UserNode.getUserNodeInstance().sendImageMessage(new File(uri.getPath().replaceAll("/document/raw:","")));
                 } else if (requestCode == PICK_VIDEO) {
                     UserNode.getUserNodeInstance().sendVideoMessage(new File(uri.getPath().replaceAll("/document/raw:","")));
+                } else if (requestCode == CAMERA) {
+                    //TODO: fix for API 30
+                    File f = new File(fileUri.getPath());
+//                    UserNode.getUserNodeInstance().sendImageMessage(f); TODO: this causes error in API 30
                 }
             }
         }
-        super.onActivityResult(requestCode, resultCode, data);
+
     }
 }
