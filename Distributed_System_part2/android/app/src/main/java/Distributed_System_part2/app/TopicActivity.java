@@ -1,9 +1,12 @@
 package Distributed_System_part2.app;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.ObservableList;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.View;
@@ -12,6 +15,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import java.io.File;
 
 import Distributed_System_part2.app.Node.UserNode;
 
@@ -28,6 +33,9 @@ public class TopicActivity extends AppCompatActivity {
 
     private String currentTopic;
 
+    private static final int PICK_IMAGE = 1;
+    private static final int PICK_VIDEO = 2;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,13 +44,13 @@ public class TopicActivity extends AppCompatActivity {
         Intent intent = getIntent();
         currentTopic = intent.getStringExtra("topic");
 
-        currentTopicTextView = (TextView)findViewById(R.id.currentTopicTextView);
-        messageEditText = (EditText)findViewById(R.id.messageEditText);
-        sendMessageButton = (Button)findViewById(R.id.sendMessageButton);
-        sendImageButton = (Button)findViewById(R.id.sendImageButton);
-        sendVideoButton = (Button)findViewById(R.id.sendVideoButton);
-        cameraButton = (Button)findViewById(R.id.cameraButton);
-        messagesListView = (ListView)findViewById(R.id.messagesListView);
+        currentTopicTextView = (TextView) findViewById(R.id.currentTopicTextView);
+        messageEditText = (EditText) findViewById(R.id.messageEditText);
+        sendMessageButton = (Button) findViewById(R.id.sendMessageButton);
+        sendImageButton = (Button) findViewById(R.id.sendImageButton);
+        sendVideoButton = (Button) findViewById(R.id.sendVideoButton);
+        cameraButton = (Button) findViewById(R.id.cameraButton);
+        messagesListView = (ListView) findViewById(R.id.messagesListView);
     }
 
     @Override
@@ -65,7 +73,9 @@ public class TopicActivity extends AppCompatActivity {
         sendImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //TODO: pick image and send it
+                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                intent.setType("image/*");
+                startActivityForResult(intent, PICK_IMAGE);
             }
         });
 
@@ -73,7 +83,9 @@ public class TopicActivity extends AppCompatActivity {
         sendVideoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //TODO: pick video and send it
+                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                intent.setType("video/*");
+                startActivityForResult(intent, PICK_VIDEO);
             }
         });
 
@@ -86,7 +98,7 @@ public class TopicActivity extends AppCompatActivity {
         });
 
         //messages adapter initialization
-        messagesAdapter = new MessageAdapter(TopicActivity.this,R.layout.message_layout, UserNode.getUserNodeInstance().topicsMessages.get(currentTopic));
+        messagesAdapter = new MessageAdapter(TopicActivity.this, R.layout.message_layout, UserNode.getUserNodeInstance().topicsMessages.get(currentTopic));
         UserNode.getUserNodeInstance().topicsMessages.get(currentTopic).addOnListChangedCallback(new ObservableList.OnListChangedCallback() {
             @Override
             public void onChanged(ObservableList sender) {
@@ -141,5 +153,22 @@ public class TopicActivity extends AppCompatActivity {
 
         //set adapter for messages list view
         messagesListView.setAdapter(messagesAdapter);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+
+        if (resultCode == Activity.RESULT_OK) {
+            Uri uri = null;
+            if (data != null) {
+                uri = data.getData();
+                if (requestCode == PICK_IMAGE) {
+                    UserNode.getUserNodeInstance().sendImageMessage(new File(uri.getPath().replaceAll("/document/raw:","")));
+                } else if (requestCode == PICK_VIDEO) {
+                    UserNode.getUserNodeInstance().sendVideoMessage(new File(uri.getPath().replaceAll("/document/raw:","")));
+                }
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }
