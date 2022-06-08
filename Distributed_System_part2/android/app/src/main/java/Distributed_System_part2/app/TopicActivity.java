@@ -142,6 +142,7 @@ public class TopicActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         messagesAdapter.notifyDataSetChanged();
+                        messagesListView.smoothScrollToPosition(messagesAdapter.getCount() -1);
                     }
                 });
             }
@@ -152,6 +153,7 @@ public class TopicActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         messagesAdapter.notifyDataSetChanged();
+                        messagesListView.smoothScrollToPosition(messagesAdapter.getCount() -1);
                     }
                 });
             }
@@ -162,6 +164,7 @@ public class TopicActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         messagesAdapter.notifyDataSetChanged();
+                        messagesListView.smoothScrollToPosition(messagesAdapter.getCount() -1);
                     }
                 });
             }
@@ -172,6 +175,7 @@ public class TopicActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         messagesAdapter.notifyDataSetChanged();
+                        messagesListView.smoothScrollToPosition(messagesAdapter.getCount() -1);
                     }
                 });
             }
@@ -182,6 +186,7 @@ public class TopicActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         messagesAdapter.notifyDataSetChanged();
+                        messagesListView.smoothScrollToPosition(messagesAdapter.getCount() -1);
                     }
                 });
             }
