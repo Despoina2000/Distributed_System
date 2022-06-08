@@ -98,7 +98,7 @@ public class UserNode {
         if (!topicsMessages.containsKey(currentTopic)) topicsMessages.put(currentTopic, new ObservableArrayList<>());
         publisher.setTopic();
 //        consumer.connectToBroker(currentBrokerPort);
-//        consumer.setTopic();
+        consumer.setTopic();
     }
 
     public void requestTopics() {
@@ -264,7 +264,7 @@ public class UserNode {
         public void connectToBroker(int port) {
 
             try {
-//                if (socket != null) disconnect();
+                if (socket != null) disconnect();
                 //connect to broker at port
                 switch (port) {
                     case PORT_BROKER1:
