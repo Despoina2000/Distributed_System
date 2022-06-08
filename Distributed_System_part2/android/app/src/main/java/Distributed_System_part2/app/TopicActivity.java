@@ -2,6 +2,7 @@ package Distributed_System_part2.app;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 import androidx.databinding.ObservableList;
 
 import android.app.Activity;
@@ -19,6 +20,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import Distributed_System_part2.app.Node.UserNode;
 
@@ -29,17 +35,19 @@ public class TopicActivity extends AppCompatActivity {
     private Button sendMessageButton;
     private Button sendImageButton;
     private Button sendVideoButton;
-    private Button cameraButton;
+    private Button cameraImageButton;
+    private Button cameraVideoButton;
     private ListView messagesListView;
     private ArrayAdapter messagesAdapter;
 
     private String currentTopic;
 
-    private Uri fileUri;
+    private File file;
 
     private static final int PICK_IMAGE = 1;
     private static final int PICK_VIDEO = 2;
-    private static final int CAMERA = 3;
+    private static final int CAMERA_IMAGE = 3;
+    private static final int CAMERA_VIDEO = 4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +62,8 @@ public class TopicActivity extends AppCompatActivity {
         sendMessageButton = (Button) findViewById(R.id.sendMessageButton);
         sendImageButton = (Button) findViewById(R.id.sendImageButton);
         sendVideoButton = (Button) findViewById(R.id.sendVideoButton);
-        cameraButton = (Button) findViewById(R.id.cameraButton);
+        cameraImageButton = (Button) findViewById(R.id.cameraImageButton);
+        cameraVideoButton = (Button) findViewById(R.id.cameraVideoButton);
         messagesListView = (ListView) findViewById(R.id.messagesListView);
     }
 
@@ -98,17 +107,29 @@ public class TopicActivity extends AppCompatActivity {
             }
         });
 
-        //camera button on click listener
-        cameraButton.setOnClickListener(new View.OnClickListener() {
+        //camera image button on click listener
+        cameraImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //TODO: take photo or image and send it
-                //TODO: fix for API 30
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 String f = System.currentTimeMillis()+".jpg"; // Designated name
-                fileUri = Uri.fromFile(new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), f)); // Specify the uri of the image to be saved, where the image is saved in the system album
+                file = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), f);
+                Uri fileUri = FileProvider.getUriForFile(TopicActivity.this,"Distributed_System_part2.app.fileprovider", file); // Specify the uri of the image to be saved, where the image is saved in the system album
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
-                startActivityForResult(intent, CAMERA);
+                startActivityForResult(intent, CAMERA_IMAGE);
+            }
+        });
+
+        //camera video button on click listener
+        cameraVideoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+                String f = System.currentTimeMillis()+".mp4"; // Designated name
+                file = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), f);
+                Uri fileUri = FileProvider.getUriForFile(TopicActivity.this,"Distributed_System_part2.app.fileprovider", file); // Specify the uri of the image to be saved, where the image is saved in the system album
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
+                startActivityForResult(intent, CAMERA_VIDEO);
             }
         });
 
@@ -181,13 +202,43 @@ public class TopicActivity extends AppCompatActivity {
             if (data != null) {
                 uri = data.getData();
                 if (requestCode == PICK_IMAGE) {
-                    UserNode.getUserNodeInstance().sendImageMessage(new File(uri.getPath().replaceAll("/document/raw:","")));
+                    try {
+                        String f = System.currentTimeMillis()+".jpg"; // Designated name
+                        file = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), f);
+                        InputStream in = getContentResolver().openInputStream(uri);
+                        OutputStream out = new FileOutputStream(file);
+                        byte[] buf = new byte[1024];
+                        int len;
+                        while((len=in.read(buf))>0){
+                            out.write(buf,0,len);
+                        }
+                        out.close();
+                        in.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    UserNode.getUserNodeInstance().sendImageMessage(file);
                 } else if (requestCode == PICK_VIDEO) {
-                    UserNode.getUserNodeInstance().sendVideoMessage(new File(uri.getPath().replaceAll("/document/raw:","")));
-                } else if (requestCode == CAMERA) {
-                    //TODO: fix for API 30
-                    File f = new File(fileUri.getPath());
-//                    UserNode.getUserNodeInstance().sendImageMessage(f); TODO: this causes error in API 30
+                    try {
+                        String f = System.currentTimeMillis()+".mp4"; // Designated name
+                        file = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), f);
+                        InputStream in = getContentResolver().openInputStream(uri);
+                        OutputStream out = new FileOutputStream(file);
+                        byte[] buf = new byte[1024];
+                        int len;
+                        while((len=in.read(buf))>0){
+                            out.write(buf,0,len);
+                        }
+                        out.close();
+                        in.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    UserNode.getUserNodeInstance().sendVideoMessage(file);
+                } else if (requestCode == CAMERA_IMAGE) {
+                    UserNode.getUserNodeInstance().sendImageMessage(file);
+                } else if (requestCode == CAMERA_VIDEO) {
+                    UserNode.getUserNodeInstance().sendVideoMessage(file);
                 }
             }
         }

@@ -178,7 +178,11 @@ public class Util {
                     if (tag.getTagName().toLowerCase(Locale.ROOT).equals("duration"))
                         video.setLength(Integer.valueOf(tag.getDescription()));
                     if (tag.getTagName().toLowerCase(Locale.ROOT).equals("frame rate"))
-                        video.setFrameRate(Integer.valueOf(tag.getDescription()));
+                        try {
+                            video.setFrameRate(Integer.valueOf(tag.getDescription()));
+                        }catch (NumberFormatException e) {
+                            video.setFrameRate(30);
+                        }
                 }
             }
             return video;

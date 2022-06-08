@@ -37,7 +37,7 @@
         android:id="@+id/messagesListView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/cameraButton"
+        app:layout_constraintBottom_toTopOf="@+id/cameraImageButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/currentTopicTextView" />
@@ -51,13 +51,12 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
-        android:id="@+id/cameraButton"
+        android:id="@+id/cameraImageButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Camera"
-        app:layout_constraintBottom_toTopOf="@+id/messageEditText"
-        app:layout_constraintEnd_toStartOf="@+id/sendImageButton"
-        app:layout_constraintStart_toEndOf="@+id/sendVideoButton" />
+        android:text="Camera Image"
+        app:layout_constraintBottom_toTopOf="@+id/sendImageButton"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <Button
         android:id="@+id/sendImageButton"
@@ -66,5 +65,13 @@
         android:text="Send Image"
         app:layout_constraintBottom_toTopOf="@+id/messageEditText"
         app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/cameraVideoButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Camera Video"
+        app:layout_constraintBottom_toTopOf="@+id/sendVideoButton"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
